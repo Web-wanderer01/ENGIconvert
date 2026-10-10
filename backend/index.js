@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -158,3 +158,5 @@ app.post('/api/ai-academic', async (req, res) => {
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Backend listening on http://localhost:${port}`));
+
+module.exports = app;
