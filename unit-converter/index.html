@@ -1,0 +1,2856 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>Universal Unit Converter — EngiConvert</title>
+
+  <link rel="stylesheet" href="/theme.css">
+  <script src="/theme.js" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --converter-radius: 18px;
+    }
+
+    .converter-shell {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .converter-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+      gap: 1.25rem;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .65rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .category-btn {
+      border: 1px solid var(--border, #ddd);
+      background: var(--card, #fff);
+      border-radius: 12px;
+      padding: .75rem .65rem;
+      cursor: pointer;
+      transition: .2s ease;
+      text-align: center;
+      font-size: .82rem;
+    }
+
+    .category-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .category-btn.active {
+      border-color: currentColor;
+      box-shadow: 0 0 0 2px rgba(100, 100, 100, .08);
+      font-weight: 700;
+    }
+
+    .category-icon {
+      display: block;
+      font-size: 1.25rem;
+      margin-bottom: .2rem;
+    }
+
+    .converter-card {
+      border-radius: var(--converter-radius);
+    }
+
+    .unit-row {
+      display: grid;
+      grid-template-columns: 1fr 48px 1fr;
+      gap: .75rem;
+      align-items: end;
+    }
+
+    .swap-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid var(--border, #ddd);
+      background: var(--card, #fff);
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: .2s;
+    }
+
+    .swap-btn:hover {
+      transform: rotate(180deg);
+    }
+
+    .result-box {
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .result-number {
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: -.04em;
+      word-break: break-word;
+    }
+
+    .result-unit {
+      font-size: 1.1rem;
+      margin-top: .5rem;
+    }
+
+    .step-list {
+      display: grid;
+      gap: .65rem;
+    }
+
+    .conversion-step {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: .65rem;
+      align-items: start;
+      padding: .7rem;
+      border-radius: 10px;
+      background: rgba(127, 127, 127, .07);
+    }
+
+    .step-number {
+      font-family: monospace;
+      font-weight: 700;
+      opacity: .65;
+    }
+
+    .formula-box {
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(127, 127, 127, .07);
+      font-family: monospace;
+      overflow-x: auto;
+    }
+
+    .history {
+      display: grid;
+      gap: .5rem;
+      max-height: 330px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      padding: .7rem .8rem;
+      border: 1px solid var(--border, #ddd);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: .15s;
+    }
+
+    .history-item:hover {
+      transform: translateX(2px);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .toolbar-left,
+    .toolbar-right {
+      display: flex;
+      gap: .5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      border: 1px solid var(--border, #ddd);
+      background: var(--card, #fff);
+      border-radius: 9px;
+      padding: .45rem .7rem;
+      cursor: pointer;
+      font-size: .82rem;
+    }
+
+    .mini-btn:hover {
+      opacity: .75;
+    }
+
+    .search-unit {
+      margin-bottom: .55rem;
+    }
+
+    .empty-state {
+      padding: 1rem;
+      text-align: center;
+      opacity: .65;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .75rem;
+    }
+
+    .info-card {
+      padding: .85rem;
+      border: 1px solid var(--border, #ddd);
+      border-radius: 12px;
+    }
+
+    .info-value {
+      font-weight: 800;
+      font-size: 1.15rem;
+    }
+
+    .status {
+      min-height: 20px;
+      font-size: .82rem;
+      opacity: .7;
+    }
+
+    @media(max-width:900px) {
+      .converter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .category-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:600px) {
+      .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .unit-row {
+        grid-template-columns: 1fr;
+      }
+
+      .swap-btn {
+        width: 100%;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .result-number {
+        font-size: 2.4rem;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <!-- ================= HEADER ================= -->
+
+  <header class="site-header">
+    <div class="wrap nav">
+
+      <a class="logo" href="/">
+        <span class="logo-mark">Σ</span>
+        EngiConvert
+      </a>
+
+                  <nav class="navlinks">
+        <a href="/universal-solver" style="color:var(--color-primary); font-weight:bold;">AI Solver ✨</a>
+        <a href="/academic-hub" style="color:#10b981; font-weight:bold;">Academic Hub 📚</a>
+        <a href="/number-system">Numbers</a>
+        <a href="/unit-converter">Units</a>
+        <a href="/computer-science">CS</a>
+        <a href="/physics">Physics</a>
+        <a href="/formulas">Formulas</a>
+      </nav>
+
+      <div class="spacer"></div>
+
+      <a class="btn ghost" href="/">
+        ← Home
+      </a>
+
+    </div>
+  </header>
+
+
+  <!-- ================= MAIN ================= -->
+
+  <main class="page">
+
+    <div class="wrap converter-shell">
+
+      <div class="page-head">
+
+        <span class="muted mono">
+          ENGINEERING CONVERTER
+        </span>
+
+        <h1>Universal Unit Converter</h1>
+
+        <p class="muted">
+          Convert engineering, scientific and everyday units with accurate
+          conversion factors and transparent calculation steps.
+        </p>
+
+      </div>
+
+
+      <!-- ================= CATEGORY SELECTOR ================= -->
+
+      <section class="card panel">
+
+        <div class="toolbar">
+
+          <div>
+            <strong>Conversion Category</strong>
+            <div class="muted" style="font-size:.82rem">
+              Select the quantity you want to convert.
+            </div>
+          </div>
+
+          <div class="toolbar-right">
+            <button class="mini-btn" onclick="clearHistory()">
+              Clear History
+            </button>
+          </div>
+
+        </div>
+
+
+        <div class="category-grid" id="categoryGrid"></div>
+
+      </section>
+
+
+      <br>
+
+
+      <!-- ================= CONVERTER ================= -->
+
+      <div class="converter-grid">
+
+
+        <!-- LEFT -->
+
+        <section class="card panel converter-card">
+
+          <div class="toolbar">
+
+            <div>
+              <div class="muted mono">
+                CONVERSION
+              </div>
+
+              <h2 id="categoryTitle" style="margin:.2rem 0 0">
+                Length
+              </h2>
+            </div>
+
+            <div class="toolbar-right">
+
+              <label class="muted" style="font-size:.8rem">
+                Precision
+              </label>
+
+              <select class="select" id="precision"
+                style="width:auto;min-width:100px">
+
+                <option value="3">3 digits</option>
+                <option value="5">5 digits</option>
+                <option value="6" selected>6 digits</option>
+                <option value="8">8 digits</option>
+                <option value="10">10 digits</option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+
+          <!-- VALUE -->
+
+          <div style="margin-bottom:1rem">
+
+            <label class="label">
+              Value
+            </label>
+
+            <input
+              class="input mono"
+              id="valueInput"
+              type="number"
+              step="any"
+              value="1"
+              placeholder="Enter value">
+
+          </div>
+
+
+          <!-- UNITS -->
+
+          <div class="unit-row">
+
+
+            <div>
+
+              <label class="label">
+                From
+              </label>
+
+              <input
+                class="input search-unit"
+                id="fromSearch"
+                placeholder="Search unit...">
+
+              <select
+                class="select"
+                id="fromUnit">
+              </select>
+
+            </div>
+
+
+            <button
+              class="swap-btn"
+              onclick="swapUnits()"
+              title="Swap units">
+
+              ⇄
+
+            </button>
+
+
+            <div>
+
+              <label class="label">
+                To
+              </label>
+
+              <input
+                class="input search-unit"
+                id="toSearch"
+                placeholder="Search unit...">
+
+              <select
+                class="select"
+                id="toUnit">
+              </select>
+
+            </div>
+
+          </div>
+
+
+          <br>
+
+
+          <button
+            class="btn"
+            style="width:100%"
+            onclick="convert()">
+
+            Convert
+
+          </button>
+
+
+          <div
+            class="status"
+            id="status"
+            style="margin-top:.65rem">
+          </div>
+
+
+          <!-- REFERENCE -->
+
+          <div style="margin-top:1.25rem">
+
+            <div class="muted mono"
+              style="margin-bottom:.55rem">
+
+              UNIT REFERENCE
+
+            </div>
+
+            <div
+              class="formula-box"
+              id="unitReference">
+
+              1 m = 100 cm
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- RIGHT -->
+
+        <section class="card panel converter-card">
+
+          <div class="result-box">
+
+            <div class="muted mono">
+              RESULT
+            </div>
+
+            <div
+              class="result-number"
+              id="answer">
+
+              3.28084
+
+            </div>
+
+            <div
+              class="result-unit"
+              id="answerUnit">
+
+              ft
+
+            </div>
+
+            <div
+              class="muted"
+              id="caption"
+              style="margin-top:.5rem">
+
+              1 m → 3.28084 ft
+
+            </div>
+
+          </div>
+
+
+          <hr style="margin:1rem 0;opacity:.15">
+
+
+          <div class="muted mono"
+            style="margin-bottom:.65rem">
+
+            CALCULATION
+
+          </div>
+
+
+          <div
+            class="step-list"
+            id="steps">
+
+          </div>
+
+
+          <div
+            style="display:flex;gap:.5rem;margin-top:1rem">
+
+            <button
+              class="mini-btn"
+              onclick="copyResult()">
+
+              Copy Result
+
+            </button>
+
+            <button
+              class="mini-btn"
+              onclick="convert()">
+
+              Recalculate
+
+            </button>
+
+          </div>
+
+        </section>
+
+      </div>
+
+
+      <br>
+
+
+      <!-- ================= EXTRA INFORMATION ================= -->
+
+      <section class="card panel">
+
+        <div class="toolbar">
+
+          <div>
+
+            <div class="muted mono">
+              ENGINEERING REFERENCE
+            </div>
+
+            <h2 style="margin:.2rem 0">
+              Conversion Information
+            </h2>
+
+          </div>
+
+        </div>
+
+
+        <div class="info-grid">
+
+          <div class="info-card">
+
+            <div class="muted">
+              Category
+            </div>
+
+            <div
+              class="info-value"
+              id="infoCategory">
+
+              Length
+
+            </div>
+
+          </div>
+
+
+          <div class="info-card">
+
+            <div class="muted">
+              Base Unit
+            </div>
+
+            <div
+              class="info-value mono"
+              id="infoBase">
+
+              m
+
+            </div>
+
+          </div>
+
+
+          <div class="info-card">
+
+            <div class="muted">
+              Available Units
+            </div>
+
+            <div
+              class="info-value"
+              id="infoUnits">
+
+              8
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <br>
+
+
+      <!-- ================= HISTORY ================= -->
+
+      <section class="card panel">
+
+        <div class="toolbar">
+
+          <div>
+
+            <div class="muted mono">
+              RECENT
+            </div>
+
+            <h2 style="margin:.2rem 0">
+              Conversion History
+            </h2>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="history"
+          id="history">
+
+          <div class="empty-state">
+            Your recent conversions will appear here.
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+
+
+  <!-- ================= FOOTER ================= -->
+
+  <footer class="footer" style="background: var(--card); border-top: 1px solid var(--border); padding: 3rem 0; margin-top: 4rem;">
+    <div class="wrap" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: left;">
+      <div>
+        <a class="logo" href="/" style="display:inline-flex; align-items:center; gap:0.5rem; font-size:1.5rem; font-weight:800; color:var(--text); text-decoration:none; margin-bottom: 1rem;">
+          <span class="logo-mark" style="background:var(--color-primary); color:#fff; padding:0.2rem 0.6rem; border-radius:0.5rem;">Σ</span>EngiConvert
+        </a>
+        <p class="muted" style="line-height: 1.6; font-size: 0.95rem;">
+          A comprehensive suite of engineering calculators, AI solvers, and academic resources designed for students and professionals. Built by Jatin Singh Bisht.
+        </p>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Quick Links</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="/universal-solver" class="muted" style="text-decoration: none; transition: color 0.2s;">✨ AI Solver</a></li>
+          <li><a href="/academic-hub" class="muted" style="text-decoration: none; transition: color 0.2s;">📚 Academic Hub</a></li>
+          <li><a href="/physics" class="muted" style="text-decoration: none; transition: color 0.2s;">⚛️ Physics Tools</a></li>
+          <li><a href="/maths" class="muted" style="text-decoration: none; transition: color 0.2s;">📐 Math Tools</a></li>
+          <li><a href="/formulas" class="muted" style="text-decoration: none; transition: color 0.2s;">🧪 Formula Library</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Connect with me</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="https://www.linkedin.com/in/jatin-singh-bisht-019648380" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">💼 LinkedIn</a></li>
+          <li><a href="https://github.com/Web-wanderer01" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">🐱 GitHub Profile</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap" style="text-align: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--color-muted); font-size: 0.9rem;">
+      &copy; 2026 EngiConvert. All rights reserved.
+    </div>
+  </footer>
+
+
+  <!-- ================= MOBILE NAV ================= -->
+
+  <nav class="bottom">
+
+    <a href="/">
+      <b>⌂</b>
+      Home
+    </a>
+
+    <a href="/number-system">
+      <b>Σ</b>
+      Numbers
+    </a>
+
+    <a href="/unit-converter">
+      <b>⇄</b>
+      Units
+    </a>
+
+    <a href="/computer-science">
+      <b>⊞</b>
+      CS
+    </a>
+
+    <a href="/physics">
+      <b>ϟ</b>
+      Physics
+    </a>
+
+    <a href="/formulas">
+      <b>≡</b>
+      Library
+    </a>
+
+  </nav>
+
+
+
+<script>
+
+/* =========================================================
+   ENGI CONVERT
+   UNIVERSAL ENGINEERING UNIT DATABASE
+   ========================================================= */
+
+
+/* =========================================================
+   SI PREFIXES
+   Source: uploaded ISA conversion table
+   ========================================================= */
+
+const siPrefixes = {
+
+  exa:   { symbol:"E", factor:1e18 },
+  peta:  { symbol:"P", factor:1e15 },
+  tera:  { symbol:"T", factor:1e12 },
+  giga:  { symbol:"G", factor:1e9 },
+  mega:  { symbol:"M", factor:1e6 },
+  kilo:  { symbol:"k", factor:1e3 },
+  hecto: { symbol:"h", factor:1e2 },
+  deca:  { symbol:"da", factor:1e1 },
+  base:  { symbol:"", factor:1 },
+  deci:  { symbol:"d", factor:1e-1 },
+  centi: { symbol:"c", factor:1e-2 },
+  milli: { symbol:"m", factor:1e-3 },
+  micro: { symbol:"μ", factor:1e-6 },
+  nano:  { symbol:"n", factor:1e-9 },
+  pico:  { symbol:"p", factor:1e-12 },
+  femto: { symbol:"f", factor:1e-15 },
+  atto:  { symbol:"a", factor:1e-18 }
+
+};
+
+
+/* =========================================================
+   UNIT DATABASE
+   factor = number of base units
+   ========================================================= */
+
+const units = {
+
+
+/* ================= NEW CATS ================= */
+
+DataStorage: {
+  label: "Data Storage",
+  units: {
+    b: { name: "Bits", symbol: "b", convert: 1 / 8 },
+    B: { name: "Bytes", symbol: "B", convert: 1 },
+    KB: { name: "Kilobytes", symbol: "KB", convert: 1024 },
+    MB: { name: "Megabytes", symbol: "MB", convert: 1048576 },
+    GB: { name: "Gigabytes", symbol: "GB", convert: 1073741824 },
+    TB: { name: "Terabytes", symbol: "TB", convert: 1099511627776 },
+  }
+},
+Time: {
+  label: "Time",
+  units: {
+    ms: { name: "Milliseconds", symbol: "ms", convert: 0.001 },
+    s: { name: "Seconds", symbol: "s", convert: 1 },
+    min: { name: "Minutes", symbol: "min", convert: 60 },
+    hr: { name: "Hours", symbol: "hr", convert: 3600 },
+    day: { name: "Days", symbol: "d", convert: 86400 },
+  }
+},
+
+/* ================= LENGTH ================= */
+
+Length: {
+
+  icon:"📏",
+  base:"m",
+
+  units:{
+
+    mm:{name:"Millimeter",symbol:"mm",factor:.001},
+    cm:{name:"Centimeter",symbol:"cm",factor:.01},
+    m:{name:"Meter",symbol:"m",factor:1},
+    km:{name:"Kilometer",symbol:"km",factor:1000},
+
+    in:{name:"Inch",symbol:"in",factor:.0254},
+    ft:{name:"Foot",symbol:"ft",factor:.3048},
+    yd:{name:"Yard",symbol:"yd",factor:.9144},
+    mi:{name:"Mile",symbol:"mi",factor:1609.344},
+
+    nmi:{name:"Nautical Mile",symbol:"nmi",factor:1852},
+    um:{name:"Micrometer",symbol:"μm",factor:1e-6},
+    nm:{name:"Nanometer",symbol:"nm",factor:1e-9}
+
+  }
+
+},
+
+
+/* ================= AREA ================= */
+
+Area: {
+
+  icon:"▣",
+  base:"m²",
+
+  units:{
+
+    mm2:{name:"Square Millimeter",symbol:"mm²",factor:1e-6},
+    cm2:{name:"Square Centimeter",symbol:"cm²",factor:1e-4},
+    m2:{name:"Square Meter",symbol:"m²",factor:1},
+    km2:{name:"Square Kilometer",symbol:"km²",factor:1e6},
+
+    in2:{name:"Square Inch",symbol:"in²",factor:.00064516},
+    ft2:{name:"Square Foot",symbol:"ft²",factor:.09290304},
+    yd2:{name:"Square Yard",symbol:"yd²",factor:.83612736},
+
+    acre:{name:"Acre",symbol:"acre",factor:4046.8564224},
+    hectare:{name:"Hectare",symbol:"ha",factor:10000}
+
+  }
+
+},
+
+
+/* ================= VOLUME ================= */
+
+Volume: {
+
+  icon:"🧊",
+  base:"m³",
+
+  units:{
+
+    cm3:{
+      name:"Cubic Centimeter",
+      symbol:"cm³",
+      factor:1e-6
+    },
+
+    m3:{
+      name:"Cubic Meter",
+      symbol:"m³",
+      factor:1
+    },
+
+    L:{
+      name:"Liter",
+      symbol:"L",
+      factor:.001
+    },
+
+    mL:{
+      name:"Milliliter",
+      symbol:"mL",
+      factor:1e-6
+    },
+
+    in3:{
+      name:"Cubic Inch",
+      symbol:"in³",
+      factor:0.000016387064
+    },
+
+    ft3:{
+      name:"Cubic Foot",
+      symbol:"ft³",
+      factor:.028316846592
+    },
+
+    USgal:{
+      name:"US Gallon",
+      symbol:"US gal",
+      factor:.003785411784
+    },
+
+    Impgal:{
+      name:"Imperial Gallon",
+      symbol:"Imp gal",
+      factor:.00454609
+    },
+
+    USbbl:{
+      name:"US Barrel (Oil)",
+      symbol:"US bbl",
+      factor:.1589872949
+    }
+
+  }
+
+},
+
+
+/* ================= MASS ================= */
+
+Mass: {
+
+  icon:"⚖",
+  base:"kg",
+
+  units:{
+
+    mg:{
+      name:"Milligram",
+      symbol:"mg",
+      factor:1e-6
+    },
+
+    g:{
+      name:"Gram",
+      symbol:"g",
+      factor:.001
+    },
+
+    kg:{
+      name:"Kilogram",
+      symbol:"kg",
+      factor:1
+    },
+
+    tonne:{
+      name:"Metric Tonne",
+      symbol:"t",
+      factor:1000
+    },
+
+    lb:{
+      name:"Pound",
+      symbol:"lb",
+      factor:.45359237
+    },
+
+    oz:{
+      name:"Ounce",
+      symbol:"oz",
+      factor:.028349523125
+    },
+
+    stone:{
+      name:"Stone",
+      symbol:"st",
+      factor:6.35029318
+    },
+
+    shortton:{
+      name:"Short Ton",
+      symbol:"short ton",
+      factor:907.18474
+    },
+
+    longton:{
+      name:"Long Ton",
+      symbol:"long ton",
+      factor:1016.0469088
+
+    }
+
+  }
+
+},
+
+
+/* ================= DENSITY ================= */
+
+Density: {
+
+  icon:"🧱",
+  base:"kg/m³",
+
+  units:{
+
+    gml:{
+      name:"Gram / Milliliter",
+      symbol:"g/mL",
+      factor:1000
+    },
+
+    kgm3:{
+      name:"Kilogram / Cubic Meter",
+      symbol:"kg/m³",
+      factor:1
+    },
+
+    lbft3:{
+      name:"Pound / Cubic Foot",
+      symbol:"lb/ft³",
+      factor:16.018463
+    },
+
+    lbin3:{
+      name:"Pound / Cubic Inch",
+      symbol:"lb/in³",
+      factor:27679.9
+    },
+
+    kgL:{
+      name:"Kilogram / Liter",
+      symbol:"kg/L",
+      factor:1000
+    }
+
+  }
+
+},
+
+
+/* ================= LIQUID FLOW ================= */
+
+"Volumetric Liquid Flow": {
+
+  icon:"💧",
+  base:"L/s",
+
+  units:{
+
+    Ls:{
+      name:"Liter / Second",
+      symbol:"L/s",
+      factor:1
+    },
+
+    Lmin:{
+      name:"Liter / Minute",
+      symbol:"L/min",
+      factor:1/60
+    },
+
+    m3hr:{
+      name:"Cubic Meter / Hour",
+      symbol:"m³/h",
+      factor:1000/3600
+    },
+
+    ft3min:{
+      name:"Cubic Foot / Minute",
+      symbol:"ft³/min",
+      factor:28.316846592/60
+    },
+
+    ft3hr:{
+      name:"Cubic Foot / Hour",
+      symbol:"ft³/h",
+      factor:28.316846592/3600
+    },
+
+    gpm:{
+      name:"US Gallon / Minute",
+      symbol:"US gal/min",
+      factor:3.785411784/60
+    },
+
+    bpd:{
+      name:"US Barrel / Day",
+      symbol:"US bbl/day",
+      factor:.1589872949/86400
+    }
+
+  }
+
+},
+
+
+/* ================= GAS FLOW ================= */
+
+"Volumetric Gas Flow": {
+
+  icon:"🌬",
+  base:"Nm³/h",
+
+  units:{
+
+    Nm3hr:{
+      name:"Normal Cubic Meter / Hour",
+      symbol:"Nm³/h",
+      factor:1
+    },
+
+    scfh:{
+      name:"Standard Cubic Foot / Hour",
+      symbol:"scfh",
+      factor:.028316846592
+    },
+
+    scfm:{
+      name:"Standard Cubic Foot / Minute",
+      symbol:"scfm",
+      factor:1.69901079552
+
+    }
+
+  }
+
+},
+
+
+/* ================= MASS FLOW ================= */
+
+"Mass Flow": {
+
+  icon:"⚙",
+  base:"kg/h",
+
+  units:{
+
+    kgh:{
+      name:"Kilogram / Hour",
+      symbol:"kg/h",
+      factor:1
+    },
+
+    lbh:{
+      name:"Pound / Hour",
+      symbol:"lb/h",
+      factor:.45359237
+    },
+
+    kgs:{
+      name:"Kilogram / Second",
+      symbol:"kg/s",
+      factor:3600
+    },
+
+    th:{
+      name:"Tonne / Hour",
+      symbol:"t/h",
+      factor:1000
+
+    }
+
+  }
+
+},
+
+
+/* ================= HIGH PRESSURE ================= */
+
+"High Pressure": {
+
+  icon:"🔴",
+  base:"bar",
+
+  units:{
+
+    bar:{
+      name:"Bar",
+      symbol:"bar",
+      factor:1
+    },
+
+    psi:{
+      name:"Pound / Square Inch",
+      symbol:"psi",
+      factor:.0689475729
+    },
+
+    kPa:{
+      name:"Kilopascal",
+      symbol:"kPa",
+      factor:.01
+    },
+
+    MPa:{
+      name:"Megapascal",
+      symbol:"MPa",
+      factor:10
+    },
+
+    kgfcm2:{
+      name:"Kilogram-force / cm²",
+      symbol:"kgf/cm²",
+      factor:.980665
+    },
+
+    mmHg:{
+      name:"Millimeter of Mercury",
+      symbol:"mmHg",
+      factor:.001333223684
+    },
+
+    atm:{
+      name:"Standard Atmosphere",
+      symbol:"atm",
+      factor:1.01325
+    },
+
+    Pa:{
+      name:"Pascal",
+      symbol:"Pa",
+      factor:1e-5
+    }
+
+  }
+
+},
+
+
+/* ================= LOW PRESSURE ================= */
+
+"Low Pressure": {
+
+  icon:"🔵",
+  base:"Pa",
+
+  units:{
+
+    mH2O:{
+      name:"Meter of Water",
+      symbol:"mH₂O",
+      factor:9806.65
+    },
+
+    ftH2O:{
+      name:"Foot of Water",
+      symbol:"ftH₂O",
+      factor:2989.06692
+    },
+
+    cmHg:{
+      name:"Centimeter of Mercury",
+      symbol:"cmHg",
+      factor:1333.22
+    },
+
+    inHg:{
+      name:"Inch of Mercury",
+      symbol:"inHg",
+      factor:3386.389
+    },
+
+    inH2O:{
+      name:"Inch of Water",
+      symbol:"inH₂O",
+      factor:249.08891
+    },
+
+    Pa:{
+      name:"Pascal",
+      symbol:"Pa",
+      factor:1
+    },
+
+    kPa:{
+      name:"Kilopascal",
+      symbol:"kPa",
+      factor:1000
+    },
+
+    bar:{
+      name:"Bar",
+      symbol:"bar",
+      factor:100000
+    }
+
+  }
+
+},
+
+
+/* ================= SPEED ================= */
+
+Speed: {
+
+  icon:"🚀",
+  base:"m/s",
+
+  units:{
+
+    ms:{
+      name:"Meter / Second",
+      symbol:"m/s",
+      factor:1
+    },
+
+    mmin:{
+      name:"Meter / Minute",
+      symbol:"m/min",
+      factor:1/60
+    },
+
+    kmh:{
+      name:"Kilometer / Hour",
+      symbol:"km/h",
+      factor:1000/3600
+    },
+
+    fts:{
+      name:"Foot / Second",
+      symbol:"ft/s",
+      factor:.3048
+    },
+
+    ftmin:{
+      name:"Foot / Minute",
+      symbol:"ft/min",
+      factor:.3048/60
+    },
+
+    mph:{
+      name:"Mile / Hour",
+      symbol:"mi/h",
+      factor:1609.344/3600
+    },
+
+    knot:{
+      name:"Knot",
+      symbol:"kn",
+      factor:.514444444
+
+    }
+
+  }
+
+},
+
+
+/* ================= TORQUE ================= */
+
+Torque: {
+
+  icon:"🔧",
+  base:"N·m",
+
+  units:{
+
+    Nm:{
+      name:"Newton Meter",
+      symbol:"N·m",
+      factor:1
+    },
+
+    kgfm:{
+      name:"Kilogram-force Meter",
+      symbol:"kgf·m",
+      factor:9.80665
+    },
+
+    ftlb:{
+      name:"Foot Pound",
+      symbol:"ft·lb",
+      factor:1.355817948
+    },
+
+    inlb:{
+      name:"Inch Pound",
+      symbol:"in·lb",
+      factor:.112984829
+
+    }
+
+  }
+
+},
+
+
+/* ================= DYNAMIC VISCOSITY ================= */
+
+"Dynamic Viscosity": {
+
+  icon:"🛢",
+  base:"Pa·s",
+
+  units:{
+
+    cP:{
+      name:"Centipoise",
+      symbol:"cP",
+      factor:.001
+    },
+
+    P:{
+      name:"Poise",
+      symbol:"P",
+      factor:.1
+    },
+
+    lbfts:{
+      name:"Pound / Foot Second",
+      symbol:"lb/(ft·s)",
+      factor:1.48816394
+    },
+
+    PaS:{
+      name:"Pascal Second",
+      symbol:"Pa·s",
+      factor:1
+
+    }
+
+  }
+
+},
+
+
+/* ================= KINEMATIC VISCOSITY ================= */
+
+"Kinematic Viscosity": {
+
+  icon:"🧪",
+  base:"m²/s",
+
+  units:{
+
+    cSt:{
+      name:"Centistoke",
+      symbol:"cSt",
+      factor:1e-6
+    },
+
+    St:{
+      name:"Stoke",
+      symbol:"St",
+      factor:1e-4
+    },
+
+    ft2s:{
+      name:"Square Foot / Second",
+      symbol:"ft²/s",
+      factor:.09290304
+    },
+
+    m2s:{
+      name:"Square Meter / Second",
+      symbol:"m²/s",
+      factor:1
+
+    }
+
+  }
+
+},
+
+
+/* ================= TEMPERATURE ================= */
+
+Temperature: {
+
+  icon:"🌡",
+  base:"°C",
+  special:"temperature",
+
+  units:{
+
+    C:{
+      name:"Celsius",
+      symbol:"°C"
+    },
+
+    F:{
+      name:"Fahrenheit",
+      symbol:"°F"
+    },
+
+    K:{
+      name:"Kelvin",
+      symbol:"K"
+    },
+
+    R:{
+      name:"Rankine",
+      symbol:"°R"
+    }
+
+  }
+
+},
+
+
+/* =========================================================
+   ADDITIONAL ENGINEERING CATEGORIES
+   ========================================================= */
+
+
+/* ================= TIME ================= */
+
+Time: {
+
+  icon:"⏱",
+  base:"s",
+
+  units:{
+
+    ns:{name:"Nanosecond",symbol:"ns",factor:1e-9},
+    us:{name:"Microsecond",symbol:"μs",factor:1e-6},
+    ms:{name:"Millisecond",symbol:"ms",factor:.001},
+    s:{name:"Second",symbol:"s",factor:1},
+    min:{name:"Minute",symbol:"min",factor:60},
+    h:{name:"Hour",symbol:"h",factor:3600},
+    day:{name:"Day",symbol:"day",factor:86400},
+    week:{name:"Week",symbol:"week",factor:604800}
+
+  }
+
+},
+
+
+/* ================= FORCE ================= */
+
+Force: {
+
+  icon:"💪",
+  base:"N",
+
+  units:{
+
+    N:{
+      name:"Newton",
+      symbol:"N",
+      factor:1
+    },
+
+    kN:{
+      name:"Kilonewton",
+      symbol:"kN",
+      factor:1000
+    },
+
+    MN:{
+      name:"Meganewton",
+      symbol:"MN",
+      factor:1e6
+    },
+
+    dyn:{
+      name:"Dyne",
+      symbol:"dyn",
+      factor:1e-5
+    },
+
+    kgf:{
+      name:"Kilogram-force",
+      symbol:"kgf",
+      factor:9.80665
+    },
+
+    lbf:{
+      name:"Pound-force",
+      symbol:"lbf",
+      factor:4.448221615
+
+    }
+
+  }
+
+},
+
+
+/* ================= ENERGY ================= */
+
+Energy: {
+
+  icon:"⚡",
+  base:"J",
+
+  units:{
+
+    J:{
+      name:"Joule",
+      symbol:"J",
+      factor:1
+    },
+
+    kJ:{
+      name:"Kilojoule",
+      symbol:"kJ",
+      factor:1000
+    },
+
+    MJ:{
+      name:"Megajoule",
+      symbol:"MJ",
+      factor:1e6
+    },
+
+    Wh:{
+      name:"Watt Hour",
+      symbol:"Wh",
+      factor:3600
+    },
+
+    kWh:{
+      name:"Kilowatt Hour",
+      symbol:"kWh",
+      factor:3.6e6
+    },
+
+    cal:{
+      name:"Calorie",
+      symbol:"cal",
+      factor:4.184
+    },
+
+    kcal:{
+      name:"Kilocalorie",
+      symbol:"kcal",
+      factor:4184
+    },
+
+    BTU:{
+      name:"British Thermal Unit",
+      symbol:"BTU",
+      factor:1055.05585262
+
+    }
+
+  }
+
+},
+
+
+/* ================= POWER ================= */
+
+Power: {
+
+  icon:"🔋",
+  base:"W",
+
+  units:{
+
+    W:{
+      name:"Watt",
+      symbol:"W",
+      factor:1
+    },
+
+    kW:{
+      name:"Kilowatt",
+      symbol:"kW",
+      factor:1000
+    },
+
+    MW:{
+      name:"Megawatt",
+      symbol:"MW",
+      factor:1e6
+    },
+
+    GW:{
+      name:"Gigawatt",
+      symbol:"GW",
+      factor:1e9
+    },
+
+    hp:{
+      name:"Mechanical Horsepower",
+      symbol:"hp",
+      factor:745.699872
+    },
+
+    BTUh:{
+      name:"BTU / Hour",
+      symbol:"BTU/h",
+      factor:.29307107
+
+    }
+
+  }
+
+},
+
+
+/* ================= FREQUENCY ================= */
+
+Frequency: {
+
+  icon:"〰",
+  base:"Hz",
+
+  units:{
+
+    Hz:{
+      name:"Hertz",
+      symbol:"Hz",
+      factor:1
+    },
+
+    kHz:{
+      name:"Kilohertz",
+      symbol:"kHz",
+      factor:1000
+    },
+
+    MHz:{
+      name:"Megahertz",
+      symbol:"MHz",
+      factor:1e6
+    },
+
+    GHz:{
+      name:"Gigahertz",
+      symbol:"GHz",
+      factor:1e9
+    },
+
+    rpm:{
+      name:"Revolutions / Minute",
+      symbol:"rpm",
+      factor:1/60
+
+    }
+
+  }
+
+},
+
+
+/* ================= ACCELERATION ================= */
+
+Acceleration: {
+
+  icon:"↗",
+  base:"m/s²",
+
+  units:{
+
+    ms2:{
+      name:"Meter / Second²",
+      symbol:"m/s²",
+      factor:1
+    },
+
+    ftss:{
+      name:"Foot / Second²",
+      symbol:"ft/s²",
+      factor:.3048
+    },
+
+    g:{
+      name:"Standard Gravity",
+      symbol:"g",
+      factor:9.80665
+
+    }
+
+  }
+
+},
+
+
+/* ================= ANGLE ================= */
+
+Angle: {
+
+  icon:"∠",
+  base:"rad",
+
+  units:{
+
+    rad:{
+      name:"Radian",
+      symbol:"rad",
+      factor:1
+    },
+
+    deg:{
+      name:"Degree",
+      symbol:"°",
+      factor:Math.PI/180
+    },
+
+    grad:{
+      name:"Gradian",
+      symbol:"grad",
+      factor:Math.PI/200
+    },
+
+    arcmin:{
+      name:"Arc Minute",
+      symbol:"′",
+      factor:Math.PI/(180*60)
+    },
+
+    arcsec:{
+      name:"Arc Second",
+      symbol:"″",
+      factor:Math.PI/(180*3600)
+
+    }
+
+  }
+
+},
+
+
+/* ================= ELECTRICAL CURRENT ================= */
+
+"Electric Current": {
+
+  icon:"🔌",
+  base:"A",
+
+  units:{
+
+    A:{
+      name:"Ampere",
+      symbol:"A",
+      factor:1
+    },
+
+    mA:{
+      name:"Milliampere",
+      symbol:"mA",
+      factor:.001
+    },
+
+    uA:{
+      name:"Microampere",
+      symbol:"μA",
+      factor:1e-6
+    },
+
+    kA:{
+      name:"Kiloampere",
+      symbol:"kA",
+      factor:1000
+
+    }
+
+  }
+
+},
+
+
+/* ================= VOLTAGE ================= */
+
+Voltage: {
+
+  icon:"🔋",
+  base:"V",
+
+  units:{
+
+    V:{
+      name:"Volt",
+      symbol:"V",
+      factor:1
+    },
+
+    mV:{
+      name:"Millivolt",
+      symbol:"mV",
+      factor:.001
+    },
+
+    kV:{
+      name:"Kilovolt",
+      symbol:"kV",
+      factor:1000
+    },
+
+    MV:{
+      name:"Megavolt",
+      symbol:"MV",
+      factor:1e6
+
+    }
+
+  }
+
+},
+
+
+/* ================= RESISTANCE ================= */
+
+Resistance: {
+
+  icon:"Ω",
+  base:"Ω",
+
+  units:{
+
+    ohm:{
+      name:"Ohm",
+      symbol:"Ω",
+      factor:1
+    },
+
+    kohm:{
+      name:"Kiloohm",
+      symbol:"kΩ",
+      factor:1000
+    },
+
+    Mohm:{
+      name:"Megaohm",
+      symbol:"MΩ",
+      factor:1e6
+
+    }
+
+  }
+
+},
+
+
+/* ================= DATA ================= */
+
+"Digital Storage": {
+
+  icon:"💾",
+  base:"byte",
+
+  units:{
+
+    bit:{
+      name:"Bit",
+      symbol:"bit",
+      factor:.125
+    },
+
+    byte:{
+      name:"Byte",
+      symbol:"B",
+      factor:1
+    },
+
+    KB:{
+      name:"Kilobyte",
+      symbol:"KB",
+      factor:1000
+    },
+
+    MB:{
+      name:"Megabyte",
+      symbol:"MB",
+      factor:1e6
+    },
+
+    GB:{
+      name:"Gigabyte",
+      symbol:"GB",
+      factor:1e9
+    },
+
+    TB:{
+      name:"Terabyte",
+      symbol:"TB",
+      factor:1e12
+    },
+
+    KiB:{
+      name:"Kibibyte",
+      symbol:"KiB",
+      factor:1024
+    },
+
+    MiB:{
+      name:"Mebibyte",
+      symbol:"MiB",
+      factor:1024**2
+    },
+
+    GiB:{
+      name:"Gibibyte",
+      symbol:"GiB",
+      factor:1024**3
+    }
+
+  }
+
+}
+
+};
+
+
+/* =========================================================
+   TEMPERATURE CONVERSION
+   ========================================================= */
+
+function temperatureToCelsius(value, unit) {
+
+  switch(unit) {
+
+    case "C":
+      return value;
+
+    case "F":
+      return (value - 32) * 5 / 9;
+
+    case "K":
+      return value - 273.15;
+
+    case "R":
+      return (value - 491.67) * 5 / 9;
+
+    default:
+      return value;
+
+  }
+
+}
+
+
+function celsiusToTemperature(value, unit) {
+
+  switch(unit) {
+
+    case "C":
+      return value;
+
+    case "F":
+      return value * 9 / 5 + 32;
+
+    case "K":
+      return value + 273.15;
+
+    case "R":
+      return (value + 273.15) * 9 / 5;
+
+    default:
+      return value;
+
+  }
+
+}
+
+
+/* =========================================================
+   DOM
+   ========================================================= */
+
+const categoryGrid = document.getElementById("categoryGrid");
+const categoryTitle = document.getElementById("categoryTitle");
+
+const valueInput = document.getElementById("valueInput");
+
+const fromUnit = document.getElementById("fromUnit");
+const toUnit = document.getElementById("toUnit");
+
+const fromSearch = document.getElementById("fromSearch");
+const toSearch = document.getElementById("toSearch");
+
+const answer = document.getElementById("answer");
+const answerUnit = document.getElementById("answerUnit");
+const caption = document.getElementById("caption");
+
+const steps = document.getElementById("steps");
+const unitReference = document.getElementById("unitReference");
+
+const infoCategory = document.getElementById("infoCategory");
+const infoBase = document.getElementById("infoBase");
+const infoUnits = document.getElementById("infoUnits");
+
+const status = document.getElementById("status");
+const precision = document.getElementById("precision");
+
+const historyElement = document.getElementById("history");
+
+
+let currentCategory = "Length";
+let history = JSON.parse(localStorage.getItem("engiConvertHistory") || "[]");
+
+
+/* =========================================================
+   CATEGORY BUTTONS
+   ========================================================= */
+
+function renderCategories() {
+
+  categoryGrid.innerHTML = "";
+
+  Object.entries(units).forEach(([category, data]) => {
+
+    const button = document.createElement("button");
+
+    button.className =
+      "category-btn " +
+      (category === currentCategory ? "active" : "");
+
+    button.innerHTML = `
+      <span class="category-icon">${data.icon}</span>
+      ${category}
+    `;
+
+    button.onclick = () => {
+
+      currentCategory = category;
+
+      renderCategories();
+      populateUnits();
+
+      convert();
+
+    };
+
+    categoryGrid.appendChild(button);
+
+  });
+
+}
+
+
+/* =========================================================
+   UNIT DROPDOWNS
+   ========================================================= */
+
+function populateUnits() {
+
+  const category = units[currentCategory];
+
+  categoryTitle.textContent = currentCategory;
+
+  infoCategory.textContent = currentCategory;
+  infoBase.textContent = category.base;
+  infoUnits.textContent = Object.keys(category.units).length;
+
+  fromSearch.value = "";
+  toSearch.value = "";
+
+  renderUnitOptions(fromUnit, "");
+  renderUnitOptions(toUnit, "");
+
+  const available = Object.keys(category.units);
+
+  if (available.length > 1) {
+
+    fromUnit.value = available[0];
+    toUnit.value = available[1];
+
+  } else {
+
+    fromUnit.value = available[0];
+    toUnit.value = available[0];
+
+  }
+
+  updateReference();
+
+}
+
+
+/* =========================================================
+   SEARCHABLE UNIT OPTIONS
+   ========================================================= */
+
+function renderUnitOptions(select, search) {
+
+  const category = units[currentCategory];
+
+  const query = search.toLowerCase().trim();
+
+  select.innerHTML = "";
+
+  Object.entries(category.units).forEach(([key, unit]) => {
+
+    const searchable =
+      `${unit.name} ${unit.symbol} ${key}`.toLowerCase();
+
+    if (!searchable.includes(query)) {
+      return;
+    }
+
+    const option = document.createElement("option");
+
+    option.value = key;
+
+    option.textContent =
+      `${unit.name} (${unit.symbol})`;
+
+    select.appendChild(option);
+
+  });
+
+}
+
+
+/* =========================================================
+   SEARCH EVENTS
+   ========================================================= */
+
+fromSearch.addEventListener("input", () => {
+
+  const current = fromUnit.value;
+
+  renderUnitOptions(fromUnit, fromSearch.value);
+
+  if (
+    [...fromUnit.options].some(
+      option => option.value === current
+    )
+  ) {
+
+    fromUnit.value = current;
+
+  }
+
+});
+
+
+toSearch.addEventListener("input", () => {
+
+  const current = toUnit.value;
+
+  renderUnitOptions(toUnit, toSearch.value);
+
+  if (
+    [...toUnit.options].some(
+      option => option.value === current
+    )
+  ) {
+
+    toUnit.value = current;
+
+  }
+
+});
+
+
+/* =========================================================
+   FORMATTING
+   ========================================================= */
+
+function formatNumber(number) {
+
+  if (!Number.isFinite(number)) {
+    return "Invalid";
+  }
+
+  const digits = Number(precision.value);
+
+  if (number === 0) {
+    return "0";
+  }
+
+  const abs = Math.abs(number);
+
+  if (abs >= 1e12 || abs < 1e-9) {
+
+    return number.toExponential(
+      Math.max(2, Math.min(digits, 12))
+    );
+
+  }
+
+  return Number(
+    number.toPrecision(digits)
+  ).toLocaleString(
+    "en-US",
+    {
+      maximumFractionDigits: digits
+    }
+  );
+
+}
+
+
+/* =========================================================
+   MAIN CONVERSION
+   ========================================================= */
+
+function convert() {
+
+  const rawValue = Number(valueInput.value);
+
+  if (!Number.isFinite(rawValue)) {
+
+    answer.textContent = "—";
+    caption.textContent = "Enter a valid number.";
+
+    steps.innerHTML = "";
+
+    return;
+
+  }
+
+  const category = units[currentCategory];
+
+  const from = fromUnit.value;
+  const to = toUnit.value;
+
+  let result;
+
+  let calculation = [];
+
+
+
+  /* ================= TEMPERATURE ================= */
+
+  if (category.special === "temperature") {
+
+    const celsius =
+      temperatureToCelsius(
+        rawValue,
+        from
+      );
+
+    result =
+      celsiusToTemperature(
+        celsius,
+        to
+      );
+
+
+    calculation = getTemperatureSteps(
+      rawValue,
+      from,
+      result,
+      to
+    );
+
+
+  }
+
+
+  /* ================= NORMAL UNITS ================= */
+
+  else {
+
+    const fromFactor =
+      category.units[from].factor;
+
+    const toFactor =
+      category.units[to].factor;
+
+
+    const baseValue =
+      rawValue * fromFactor;
+
+    result =
+      baseValue / toFactor;
+
+
+    calculation = [
+
+      `
+      Convert ${formatNumber(rawValue)}
+      ${category.units[from].symbol}
+      to the base unit:
+      <strong>
+      ${formatNumber(baseValue)}
+      ${category.base}
+      </strong>
+      `,
+
+      `
+      Divide by the destination-unit factor:
+      <strong>
+      ${formatNumber(baseValue)}
+      ÷
+      ${formatNumber(toFactor)}
+      </strong>
+      `,
+
+      `
+      Final result:
+      <strong>
+      ${formatNumber(result)}
+      ${category.units[to].symbol}
+      </strong>
+      `
+
+    ];
+
+  }
+
+
+  /* ================= DISPLAY ================= */
+
+  answer.textContent =
+    formatNumber(result);
+
+  answerUnit.textContent =
+    category.units[to].symbol;
+
+  caption.textContent =
+    `${formatNumber(rawValue)} ${category.units[from].symbol}
+     → ${formatNumber(result)} ${category.units[to].symbol}`;
+
+
+  renderSteps(calculation);
+
+  updateReference();
+
+  status.textContent =
+    `Converted using ${currentCategory} conversion factors.`;
+
+  addHistory(
+    rawValue,
+    from,
+    result,
+    to
+  );
+
+}
+
+
+/* =========================================================
+   TEMPERATURE STEPS
+   ========================================================= */
+
+function getTemperatureSteps(
+  value,
+  from,
+  result,
+  to
+) {
+
+  const symbols = {
+    C:"°C",
+    F:"°F",
+    K:"K",
+    R:"°R"
+  };
+
+  if (from === to) {
+
+    return [
+      `
+      Same temperature scale selected.
+      No mathematical conversion is required.
+      `
+    ];
+
+  }
+
+
+  let formula = "";
+
+  if (from === "C" && to === "F") {
+    formula = "°F = (°C × 9/5) + 32";
+  }
+
+  else if (from === "F" && to === "C") {
+    formula = "°C = (°F − 32) × 5/9";
+  }
+
+  else if (from === "C" && to === "K") {
+    formula = "K = °C + 273.15";
+  }
+
+  else if (from === "K" && to === "C") {
+    formula = "°C = K − 273.15";
+  }
+
+  else if (from === "F" && to === "K") {
+    formula = "K = (°F − 32) × 5/9 + 273.15";
+  }
+
+  else if (from === "K" && to === "F") {
+    formula = "°F = (K − 273.15) × 9/5 + 32";
+  }
+
+  else if (from === "R" && to === "C") {
+    formula = "°C = (°R − 491.67) × 5/9";
+  }
+
+  else if (from === "C" && to === "R") {
+    formula = "°R = (°C + 273.15) × 9/5";
+  }
+
+  else {
+    formula = "Temperature scale conversion";
+  }
+
+
+  return [
+
+    `
+    Temperature conversion formula:
+    <strong>${formula}</strong>
+    `,
+
+    `
+    Input:
+    <strong>
+    ${formatNumber(value)}
+    ${symbols[from]}
+    </strong>
+    `,
+
+    `
+    Result:
+    <strong>
+    ${formatNumber(result)}
+    ${symbols[to]}
+    </strong>
+    `
+
+  ];
+
+}
+
+
+/* =========================================================
+   RENDER STEPS
+   ========================================================= */
+
+function renderSteps(items) {
+
+  steps.innerHTML = "";
+
+  items.forEach((text, index) => {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "conversion-step";
+
+    div.innerHTML = `
+      <span class="step-number">
+        ${String(index + 1).padStart(2, "0")}
+      </span>
+
+      <div>
+        ${text}
+      </div>
+    `;
+
+    steps.appendChild(div);
+
+  });
+
+}
+
+
+/* =========================================================
+   UNIT REFERENCE
+   ========================================================= */
+
+function updateReference() {
+
+  const category = units[currentCategory];
+
+  const from = category.units[fromUnit.value];
+  const to = category.units[toUnit.value];
+
+  if (!from || !to) {
+    return;
+  }
+
+  if (category.special === "temperature") {
+
+    unitReference.innerHTML = `
+      <strong>Temperature formulas</strong><br><br>
+
+      °C = (°F − 32) × 5/9<br>
+      °F = (°C × 9/5) + 32<br>
+      K = °C + 273.15<br>
+      °C = K − 273.15<br>
+      °R = (°C + 273.15) × 9/5
+    `;
+
+    return;
+
+  }
+
+  const factor =
+    from.factor / to.factor;
+
+  unitReference.innerHTML = `
+    1 ${from.symbol}
+    =
+    <strong>
+      ${formatNumber(factor)}
+    </strong>
+    ${to.symbol}
+  `;
+
+}
+
+
+/* =========================================================
+   SWAP
+   ========================================================= */
+
+function swapUnits() {
+
+  const oldFrom = fromUnit.value;
+  const oldTo = toUnit.value;
+
+  fromUnit.value = oldTo;
+  toUnit.value = oldFrom;
+
+  fromSearch.value = "";
+  toSearch.value = "";
+
+  convert();
+
+}
+
+
+/* =========================================================
+   COPY
+   ========================================================= */
+
+async function copyResult() {
+
+  const text =
+    `${answer.textContent} ${answerUnit.textContent}`;
+
+  try {
+
+    await navigator.clipboard.writeText(text);
+
+    status.textContent =
+      "Result copied to clipboard.";
+
+  }
+
+  catch {
+
+    status.textContent =
+      "Unable to copy automatically.";
+
+  }
+
+}
+
+
+/* =========================================================
+   HISTORY
+   ========================================================= */
+
+function addHistory(
+  input,
+  from,
+  result,
+  to
+) {
+
+  const category = units[currentCategory];
+
+  const item = {
+
+    category: currentCategory,
+
+    input,
+
+    from:
+      category.units[from].symbol,
+
+    result,
+
+    to:
+      category.units[to].symbol
+
+  };
+
+
+  history.unshift(item);
+
+  history =
+    history.slice(0, 20);
+
+  localStorage.setItem(
+    "engiConvertHistory",
+    JSON.stringify(history)
+  );
+
+  renderHistory();
+
+}
+
+
+function renderHistory() {
+
+  if (!history.length) {
+
+    historyElement.innerHTML = `
+      <div class="empty-state">
+        Your recent conversions will appear here.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  historyElement.innerHTML = "";
+
+  history.forEach(item => {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "history-item";
+
+    div.innerHTML = `
+
+      <div class="muted"
+        style="font-size:.75rem">
+
+        ${item.category}
+
+      </div>
+
+      <strong>
+        ${item.input} ${item.from}
+        →
+        ${formatNumber(item.result)}
+        ${item.to}
+      </strong>
+
+    `;
+
+    historyElement.appendChild(div);
+
+  });
+
+}
+
+
+function clearHistory() {
+
+  history = [];
+
+  localStorage.removeItem(
+    "engiConvertHistory"
+  );
+
+  renderHistory();
+
+}
+
+
+/* =========================================================
+   LIVE EVENTS
+   ========================================================= */
+
+fromUnit.addEventListener(
+  "change",
+  convert
+);
+
+toUnit.addEventListener(
+  "change",
+  convert
+);
+
+valueInput.addEventListener(
+  "input",
+  convert
+);
+
+precision.addEventListener(
+  "change",
+  convert
+);
+
+
+/* =========================================================
+   ENTER KEY
+   ========================================================= */
+
+valueInput.addEventListener(
+  "keydown",
+  event => {
+
+    if (event.key === "Enter") {
+      convert();
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+renderCategories();
+
+populateUnits();
+
+renderHistory();
+
+convert();
+
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,11 @@
+**/node_modules
+**/.git
+**/.idea
+**/.vscode
+**/data.db
+**/.DS_Store
+**/*.log
+**/tmp
+**/dist
+**/build
+**/*.zip

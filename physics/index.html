@@ -1,0 +1,2939 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>Physics Calculator — EngiConvert</title>
+
+  <link rel="stylesheet" href="/theme.css">
+  <script src="/theme.js" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .formula-search {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .category-title {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      opacity: .65;
+      margin: 1.25rem 0 .5rem;
+    }
+
+    .formula-info {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(127, 127, 127, .08);
+    }
+
+    .formula-display {
+      font-family: "Times New Roman", serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: .4rem;
+    }
+
+    .unit-hint {
+      font-size: .8rem;
+      opacity: .65;
+    }
+
+    .error {
+      color: #dc2626;
+      font-weight: 600;
+    }
+
+    .success {
+      color: #16a34a;
+    }
+
+    .step {
+      display: flex;
+      gap: .75rem;
+      margin-top: .65rem;
+      align-items: flex-start;
+    }
+
+    .step span {
+      min-width: 30px;
+      font-family: monospace;
+      opacity: .55;
+    }
+
+    .constants {
+      display: grid;
+      gap: .5rem;
+      margin-top: 1rem;
+    }
+
+    .constant {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .55rem .7rem;
+      border-radius: 8px;
+      background: rgba(127, 127, 127, .06);
+      font-size: .85rem;
+    }
+
+    @media(max-width:700px) {
+      .split {
+        grid-template-columns: 1fr !important;
+      }
+
+      .constant {
+        flex-direction: column;
+        gap: .15rem;
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="wrap nav">
+
+      <a class="logo" href="/">
+        <span class="logo-mark">Σ</span>
+        EngiConvert
+      </a>
+
+                  <nav class="navlinks">
+        <a href="/universal-solver" style="color:var(--color-primary); font-weight:bold;">AI Solver ✨</a>
+        <a href="/academic-hub" style="color:#10b981; font-weight:bold;">Academic Hub 📚</a>
+        <a href="/number-system">Numbers</a>
+        <a href="/unit-converter">Units</a>
+        <a href="/computer-science">CS</a>
+        <a href="/physics">Physics</a>
+        <a href="/formulas">Formulas</a>
+      </nav>
+
+      <div class="spacer"></div>
+
+      <a class="btn ghost" href="/">← Home</a>
+
+    </div>
+  </header>
+
+
+  <!-- MAIN -->
+  <main class="page">
+
+    <div class="wrap">
+
+      <div class="page-head">
+
+        <span class="muted mono">PHYSICS CALCULATOR</span>
+
+        <h1>Physics Calculator</h1>
+
+        <p class="muted">
+          Calculate physics formulas with automatic substitution,
+          working steps and units.
+        </p>
+
+      </div>
+
+
+      <div class="split">
+
+        <!-- CALCULATOR -->
+        <section class="card panel">
+
+          <div class="form">
+
+            <div>
+              <label class="label">Search Formula</label>
+
+              <div style="display:flex; gap:0.5rem; width:100%;">
+              <input class="input formula-search" id="formulaSearch" type="text" placeholder="Search force, energy, velocity..." oninput="filterFormulas()" onkeydown="handleAISearch(event, 'Physics')" style="flex:1;">
+              <button class="btn" onclick="triggerAISearch('Physics')" id="aiSearchBtn" style="background:var(--color-primary); color:white; flex-shrink:0;">✨ AI Search</button>
+            </div>
+
+            </div>
+
+
+            <div>
+              <label class="label">Formula</label>
+
+              <select
+                class="select"
+                id="kind"
+                onchange="loadFormula()">
+              </select>
+            </div>
+
+
+            <div class="formula-info">
+
+              <div class="muted mono">
+                FORMULA
+              </div>
+
+              <div
+                class="formula-display"
+                id="formulaDisplay">
+              </div>
+
+              <div
+                class="unit-hint"
+                id="formulaDescription">
+              </div>
+
+            </div>
+
+
+            <div id="inputs"></div>
+
+
+            <button
+              class="btn"
+              style="width:100%;margin-top:1rem"
+              onclick="calculate()">
+              Calculate
+            </button>
+
+          </div>
+
+        </section>
+
+
+        <!-- RESULT -->
+        <section class="result panel">
+
+          <div class="muted mono">
+            RESULT
+          </div>
+
+          <div
+            class="result-value"
+            id="answer"
+            style="margin-top:1rem">
+            —
+          </div>
+
+          <div
+            class="muted"
+            id="formulaResult">
+            Select a formula to begin.
+          </div>
+
+
+          <div
+            class="steps"
+            id="steps">
+          </div>
+
+
+          <!-- CONSTANTS -->
+          <div style="margin-top:2rem">
+
+            <div class="muted mono">
+              COMMON CONSTANTS
+            </div>
+
+            <div class="constants">
+
+              <div class="constant">
+                <span>Acceleration due to gravity</span>
+                <b>9.80 m/s²</b>
+              </div>
+
+              <div class="constant">
+                <span>Gravitational constant G</span>
+                <b>6.673 × 10⁻¹¹ N·m²/kg²</b>
+              </div>
+
+              <div class="constant">
+                <span>Speed of light</span>
+                <b>3.00 × 10⁸ m/s</b>
+              </div>
+
+              <div class="constant">
+                <span>Speed of sound at 20°C</span>
+                <b>343 m/s</b>
+              </div>
+
+              <div class="constant">
+                <span>Avogadro constant</span>
+                <b>6.02 × 10²³ mol⁻¹</b>
+              </div>
+
+              <div class="constant">
+                <span>Elementary charge</span>
+                <b>1.60 × 10⁻¹⁹ C</b>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="footer" style="background: var(--card); border-top: 1px solid var(--border); padding: 3rem 0; margin-top: 4rem;">
+    <div class="wrap" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: left;">
+      <div>
+        <a class="logo" href="/" style="display:inline-flex; align-items:center; gap:0.5rem; font-size:1.5rem; font-weight:800; color:var(--text); text-decoration:none; margin-bottom: 1rem;">
+          <span class="logo-mark" style="background:var(--color-primary); color:#fff; padding:0.2rem 0.6rem; border-radius:0.5rem;">Σ</span>EngiConvert
+        </a>
+        <p class="muted" style="line-height: 1.6; font-size: 0.95rem;">
+          A comprehensive suite of engineering calculators, AI solvers, and academic resources designed for students and professionals. Built by Jatin Singh Bisht.
+        </p>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Quick Links</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="/universal-solver" class="muted" style="text-decoration: none; transition: color 0.2s;">✨ AI Solver</a></li>
+          <li><a href="/academic-hub" class="muted" style="text-decoration: none; transition: color 0.2s;">📚 Academic Hub</a></li>
+          <li><a href="/physics" class="muted" style="text-decoration: none; transition: color 0.2s;">⚛️ Physics Tools</a></li>
+          <li><a href="/maths" class="muted" style="text-decoration: none; transition: color 0.2s;">📐 Math Tools</a></li>
+          <li><a href="/formulas" class="muted" style="text-decoration: none; transition: color 0.2s;">🧪 Formula Library</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Connect with me</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="https://www.linkedin.com/in/jatin-singh-bisht-019648380" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">💼 LinkedIn</a></li>
+          <li><a href="https://github.com/Web-wanderer01" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">🐱 GitHub Profile</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap" style="text-align: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--color-muted); font-size: 0.9rem;">
+      &copy; 2026 EngiConvert. All rights reserved.
+    </div>
+  </footer>
+
+
+  <!-- MOBILE NAV -->
+  <nav class="bottom">
+
+    <a href="/">
+      <b>⌂</b>
+      Home
+    </a>
+
+    <a href="/number-system">
+      <b>Σ</b>
+      Numbers
+    </a>
+
+    <a href="/unit-converter">
+      <b>⇄</b>
+      Units
+    </a>
+
+    <a href="/physics">
+      <b>ϟ</b>
+      Physics
+    </a>
+
+    <a href="/formulas">
+      <b>≡</b>
+      Library
+    </a>
+
+  </nav>
+
+
+<script>
+
+/* =========================================================
+   PHYSICS FORMULA DATABASE
+   ========================================================= */
+
+const formulas = [
+
+{
+  id: "kinematics1", category: "Kinematics", name: "Final Velocity (v = u + at)", formula: "v = u + a * t", description: "Calculate final velocity given initial velocity, acceleration, and time.",
+  inputs: [ ["u", "Initial Velocity (m/s)"], ["a", "Acceleration (m/s)"], ["t", "Time (s)"] ],
+  calc: v => {
+    let result = v.u + (v.a * v.t);
+    return { value: result.toFixed(2) + " m/s", steps: ["v = u + at", `v = ${v.u} + (${v.a} * ${v.t})`, `v = ${result.toFixed(2)}`] };
+  }
+},
+{
+  id: "work", category: "Energy & Work", name: "Work Done", formula: "W = F * d", description: "Calculate work done by a force.",
+  inputs: [ ["F", "Force (N)"], ["d", "Distance (m)"] ],
+  calc: v => {
+    let result = v.F * v.d;
+    return { value: result.toFixed(2) + " J", steps: ["W = F * d", `W = ${v.F} * ${v.d}`, `W = ${result.toFixed(2)} Joules`] };
+  }
+},
+{
+  id: "power", category: "Energy & Work", name: "Power", formula: "P = W / t", description: "Calculate power.",
+  inputs: [ ["W", "Work (J)"], ["t", "Time (s)"] ],
+  calc: v => {
+    let result = v.W / v.t;
+    return { value: result.toFixed(2) + " W", steps: ["P = W / t", `P = ${v.W} / ${v.t}`, `P = ${result.toFixed(2)} Watts`] };
+  }
+},
+
+
+/* =========================
+   CONSTANTS / BASIC
+   ========================= */
+
+{
+  id:"quadratic",
+  category:"Constants & Basic",
+  name:"Quadratic Equation",
+  formula:"x = (-b ± √(b² − 4ac)) / 2a",
+  description:"Solve ax² + bx + c = 0.",
+  inputs:[
+    ["a","Coefficient a"],
+    ["b","Coefficient b"],
+    ["c","Coefficient c"]
+  ],
+  calc:v=>{
+    const d=v.b*v.b-4*v.a*v.c;
+    if(d<0) return {value:"Complex roots",steps:[
+      `Discriminant = ${fmt(d)}`,
+      "Since the discriminant is negative, the roots are complex."
+    ]};
+
+    const x1=(-v.b+Math.sqrt(d))/(2*v.a);
+    const x2=(-v.b-Math.sqrt(d))/(2*v.a);
+
+    return {
+      value:`x₁ = ${fmt(x1)}, x₂ = ${fmt(x2)}`,
+      steps:[
+        `D = b² − 4ac = ${fmt(d)}`,
+        `x₁ = ${fmt(x1)}`,
+        `x₂ = ${fmt(x2)}`
+      ]
+    };
+  }
+},
+
+{
+  id:"sin",
+  category:"Constants & Basic",
+  name:"Sine",
+  formula:"sin(θ) = opposite / hypotenuse",
+  inputs:[
+    ["opposite","Opposite side"],
+    ["hypotenuse","Hypotenuse"]
+  ],
+  calc:v=>({
+    value:fmt(v.opposite/v.hypotenuse),
+    steps:[
+      `sin(θ) = ${v.opposite} / ${v.hypotenuse}`,
+      `sin(θ) = ${fmt(v.opposite/v.hypotenuse)}`
+    ]
+  })
+},
+
+{
+  id:"cos",
+  category:"Constants & Basic",
+  name:"Cosine",
+  formula:"cos(θ) = adjacent / hypotenuse",
+  inputs:[
+    ["adjacent","Adjacent side"],
+    ["hypotenuse","Hypotenuse"]
+  ],
+  calc:v=>({
+    value:fmt(v.adjacent/v.hypotenuse),
+    steps:[
+      `cos(θ) = ${v.adjacent} / ${v.hypotenuse}`,
+      `cos(θ) = ${fmt(v.adjacent/v.hypotenuse)}`
+    ]
+  })
+},
+
+{
+  id:"tan",
+  category:"Constants & Basic",
+  name:"Tangent",
+  formula:"tan(θ) = opposite / adjacent",
+  inputs:[
+    ["opposite","Opposite side"],
+    ["adjacent","Adjacent side"]
+  ],
+  calc:v=>({
+    value:fmt(v.opposite/v.adjacent),
+    steps:[
+      `tan(θ) = ${v.opposite} / ${v.adjacent}`,
+      `tan(θ) = ${fmt(v.opposite/v.adjacent)}`
+    ]
+  })
+},
+
+
+/* =========================
+   MOTION / KINEMATICS
+   ========================= */
+
+{
+  id:"average-speed",
+  category:"Motion & Kinematics",
+  name:"Average Speed",
+  formula:"s = d / t",
+  unit:"m/s",
+  inputs:[
+    ["d","Distance (m)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.d/v.t)+" m/s",
+    steps:[
+      `s = d / t`,
+      `s = ${v.d} / ${v.t}`,
+      `s = ${fmt(v.d/v.t)} m/s`
+    ]
+  })
+},
+
+{
+  id:"average-velocity",
+  category:"Motion & Kinematics",
+  name:"Average Velocity",
+  formula:"vavg = Δd / Δt",
+  unit:"m/s",
+  inputs:[
+    ["d","Displacement (m)"],
+    ["t","Time interval (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.d/v.t)+" m/s",
+    steps:[
+      `vavg = ${v.d} / ${v.t}`,
+      `vavg = ${fmt(v.d/v.t)} m/s`
+    ]
+  })
+},
+
+{
+  id:"acceleration",
+  category:"Motion & Kinematics",
+  name:"Acceleration",
+  formula:"a = (v − u) / t",
+  unit:"m/s²",
+  inputs:[
+    ["v","Final velocity (m/s)"],
+    ["u","Initial velocity (m/s)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt((v.v-v.u)/v.t)+" m/s²",
+    steps:[
+      `a = (v − u) / t`,
+      `a = (${v.v} − ${v.u}) / ${v.t}`,
+      `a = ${fmt((v.v-v.u)/v.t)} m/s²`
+    ]
+  })
+},
+
+{
+  id:"velocity-kinematic",
+  category:"Motion & Kinematics",
+  name:"First Kinematic Equation",
+  formula:"v = u + at",
+  unit:"m/s",
+  inputs:[
+    ["u","Initial velocity (m/s)"],
+    ["a","Acceleration (m/s²)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.u+v.a*v.t)+" m/s",
+    steps:[
+      `v = u + at`,
+      `v = ${v.u} + (${v.a} × ${v.t})`,
+      `v = ${fmt(v.u+v.a*v.t)} m/s`
+    ]
+  })
+},
+
+{
+  id:"displacement-kinematic",
+  category:"Motion & Kinematics",
+  name:"Second Kinematic Equation",
+  formula:"s = ut + ½at²",
+  unit:"m",
+  inputs:[
+    ["u","Initial velocity (m/s)"],
+    ["a","Acceleration (m/s²)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.u*v.t+.5*v.a*v.t*v.t)+" m",
+    steps:[
+      `s = ut + ½at²`,
+      `s = (${v.u} × ${v.t}) + ½(${v.a})(${v.t})²`,
+      `s = ${fmt(v.u*v.t+.5*v.a*v.t*v.t)} m`
+    ]
+  })
+},
+
+{
+  id:"velocity-square",
+  category:"Motion & Kinematics",
+  name:"Third Kinematic Equation",
+  formula:"v² = u² + 2as",
+  unit:"m/s",
+  inputs:[
+    ["u","Initial velocity (m/s)"],
+    ["a","Acceleration (m/s²)"],
+    ["s","Displacement (m)"]
+  ],
+  calc:v=>{
+    const r=Math.sqrt(v.u*v.u+2*v.a*v.s);
+    return {
+      value:fmt(r)+" m/s",
+      steps:[
+        `v² = ${v.u}² + 2(${v.a})(${v.s})`,
+        `v = ${fmt(r)} m/s`
+      ]
+    };
+  }
+},
+
+{
+  id:"avg-velocity-uv",
+  category:"Motion & Kinematics",
+  name:"Average Velocity from u and v",
+  formula:"s = ((u + v) / 2)t",
+  unit:"m",
+  inputs:[
+    ["u","Initial velocity (m/s)"],
+    ["v","Final velocity (m/s)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt(((v.u+v.v)/2)*v.t)+" m",
+    steps:[
+      `s = ((u + v) / 2)t`,
+      `s = ((${v.u} + ${v.v}) / 2) × ${v.t}`,
+      `s = ${fmt(((v.u+v.v)/2)*v.t)} m`
+    ]
+  })
+},
+
+{
+  id:"distance-vt",
+  category:"Motion & Kinematics",
+  name:"Distance from Velocity and Time",
+  formula:"d = vt + d₀",
+  unit:"m",
+  inputs:[
+    ["v","Velocity (m/s)"],
+    ["t","Time (s)"],
+    ["d0","Initial position (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.v*v.t+v.d0)+" m",
+    steps:[
+      `d = (${v.v} × ${v.t}) + ${v.d0}`,
+      `d = ${fmt(v.v*v.t+v.d0)} m`
+    ]
+  })
+},
+
+{
+  id:"range-projectile",
+  category:"Motion & Kinematics",
+  name:"Projectile Range",
+  formula:"R = v₀² sin(2θ) / g",
+  unit:"m",
+  inputs:[
+    ["v0","Initial velocity (m/s)"],
+    ["theta","Angle (degrees)"],
+    ["g","Gravity (m/s²)"]
+  ],
+  calc:v=>{
+    const r=v.v0*v.v0*Math.sin(2*v.theta*Math.PI/180)/v.g;
+    return {
+      value:fmt(r)+" m",
+      steps:[
+        `R = v₀² sin(2θ) / g`,
+        `R = ${v.v0}² × sin(${2*v.theta}°) / ${v.g}`,
+        `R = ${fmt(r)} m`
+      ]
+    };
+  }
+},
+
+
+/* =========================
+   FORCES
+   ========================= */
+
+{
+  id:"force",
+  category:"Forces & Newton's Laws",
+  name:"Newton's Second Law / Force",
+  formula:"F = ma",
+  unit:"N",
+  inputs:[
+    ["m","Mass (kg)"],
+    ["a","Acceleration (m/s²)"]
+  ],
+  calc:v=>({
+    value:fmt(v.m*v.a)+" N",
+    steps:[
+      `F = ma`,
+      `F = ${v.m} × ${v.a}`,
+      `F = ${fmt(v.m*v.a)} N`
+    ]
+  })
+},
+
+{
+  id:"weight",
+  category:"Forces & Newton's Laws",
+  name:"Weight",
+  formula:"W = mg",
+  unit:"N",
+  inputs:[
+    ["m","Mass (kg)"],
+    ["g","Gravity (m/s²)"]
+  ],
+  calc:v=>({
+    value:fmt(v.m*v.g)+" N",
+    steps:[
+      `W = mg`,
+      `W = ${v.m} × ${v.g}`,
+      `W = ${fmt(v.m*v.g)} N`
+    ]
+  })
+},
+
+{
+  id:"static-friction",
+  category:"Forces & Newton's Laws",
+  name:"Static Friction",
+  formula:"fₛ = μₛFN",
+  unit:"N",
+  inputs:[
+    ["mu","Coefficient of static friction"],
+    ["N","Normal force (N)"]
+  ],
+  calc:v=>({
+    value:fmt(v.mu*v.N)+" N",
+    steps:[
+      `fₛ = μₛFN`,
+      `fₛ = ${v.mu} × ${v.N}`,
+      `fₛ = ${fmt(v.mu*v.N)} N`
+    ]
+  })
+},
+
+{
+  id:"kinetic-friction",
+  category:"Forces & Newton's Laws",
+  name:"Kinetic Friction",
+  formula:"fₖ = μₖFN",
+  unit:"N",
+  inputs:[
+    ["mu","Coefficient of kinetic friction"],
+    ["N","Normal force (N)"]
+  ],
+  calc:v=>({
+    value:fmt(v.mu*v.N)+" N",
+    steps:[
+      `fₖ = μₖFN`,
+      `fₖ = ${v.mu} × ${v.N}`,
+      `fₖ = ${fmt(v.mu*v.N)} N`
+    ]
+  })
+},
+
+{
+  id:"spring-force",
+  category:"Forces & Newton's Laws",
+  name:"Spring Force",
+  formula:"Fₛ = kΔx",
+  unit:"N",
+  inputs:[
+    ["k","Spring constant (N/m)"],
+    ["x","Extension (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.k*v.x)+" N",
+    steps:[
+      `Fₛ = kΔx`,
+      `Fₛ = ${v.k} × ${v.x}`,
+      `Fₛ = ${fmt(v.k*v.x)} N`
+    ]
+  })
+},
+
+
+/* =========================
+   CIRCULAR MOTION & TORQUE
+   ========================= */
+
+{
+  id:"angular-displacement",
+  category:"Circular Motion & Torque",
+  name:"Angular Displacement",
+  formula:"Δθ = Δs / r",
+  unit:"rad",
+  inputs:[
+    ["s","Arc length (m)"],
+    ["r","Radius (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.s/v.r)+" rad",
+    steps:[
+      `Δθ = Δs / r`,
+      `Δθ = ${v.s} / ${v.r}`,
+      `Δθ = ${fmt(v.s/v.r)} rad`
+    ]
+  })
+},
+
+{
+  id:"centripetal-acceleration",
+  category:"Circular Motion & Torque",
+  name:"Centripetal Acceleration",
+  formula:"aᶜ = v²/r = rω²",
+  unit:"m/s²",
+  inputs:[
+    ["v","Velocity (m/s)"],
+    ["r","Radius (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.v*v.v/v.r)+" m/s²",
+    steps:[
+      `aᶜ = v² / r`,
+      `aᶜ = ${v.v}² / ${v.r}`,
+      `aᶜ = ${fmt(v.v*v.v/v.r)} m/s²`
+    ]
+  })
+},
+
+{
+  id:"centripetal-force",
+  category:"Circular Motion & Torque",
+  name:"Centripetal Force",
+  formula:"Fc = mv²/r",
+  unit:"N",
+  inputs:[
+    ["m","Mass (kg)"],
+    ["v","Velocity (m/s)"],
+    ["r","Radius (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.m*v.v*v.v/v.r)+" N",
+    steps:[
+      `Fc = mv²/r`,
+      `Fc = ${v.m} × ${v.v}² / ${v.r}`,
+      `Fc = ${fmt(v.m*v.v*v.v/v.r)} N`
+    ]
+  })
+},
+
+{
+  id:"torque",
+  category:"Circular Motion & Torque",
+  name:"Torque",
+  formula:"τ = Fr sinθ",
+  unit:"N·m",
+  inputs:[
+    ["F","Force (N)"],
+    ["r","Lever arm (m)"],
+    ["theta","Angle (degrees)"]
+  ],
+  calc:v=>{
+    const r=v.F*v.r*Math.sin(v.theta*Math.PI/180);
+    return {
+      value:fmt(r)+" N·m",
+      steps:[
+        `τ = Fr sinθ`,
+        `τ = ${v.F} × ${v.r} × sin(${v.theta}°)`,
+        `τ = ${fmt(r)} N·m`
+      ]
+    };
+  }
+},
+
+{
+  id:"angular-velocity",
+  category:"Circular Motion & Torque",
+  name:"Angular Velocity",
+  formula:"ω = Δθ / Δt",
+  unit:"rad/s",
+  inputs:[
+    ["theta","Angular displacement (rad)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.theta/v.t)+" rad/s",
+    steps:[
+      `ω = Δθ / Δt`,
+      `ω = ${v.theta} / ${v.t}`,
+      `ω = ${fmt(v.theta/v.t)} rad/s`
+    ]
+  })
+},
+
+{
+  id:"linear-angular-speed",
+  category:"Circular Motion & Torque",
+  name:"Linear Speed from Angular Speed",
+  formula:"v = rω",
+  unit:"m/s",
+  inputs:[
+    ["r","Radius (m)"],
+    ["omega","Angular velocity (rad/s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.r*v.omega)+" m/s",
+    steps:[
+      `v = rω`,
+      `v = ${v.r} × ${v.omega}`,
+      `v = ${fmt(v.r*v.omega)} m/s`
+    ]
+  })
+},
+
+{
+  id:"angular-acceleration",
+  category:"Circular Motion & Torque",
+  name:"Angular Acceleration",
+  formula:"α = Δω / Δt",
+  unit:"rad/s²",
+  inputs:[
+    ["omega","Change in angular velocity (rad/s)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.omega/v.t)+" rad/s²",
+    steps:[
+      `α = Δω / Δt`,
+      `α = ${v.omega} / ${v.t}`,
+      `α = ${fmt(v.omega/v.t)} rad/s²`
+    ]
+  })
+},
+
+{
+  id:"tangential-acceleration",
+  category:"Circular Motion & Torque",
+  name:"Tangential Acceleration",
+  formula:"aₜ = rα",
+  unit:"m/s²",
+  inputs:[
+    ["r","Radius (m)"],
+    ["alpha","Angular acceleration (rad/s²)"]
+  ],
+  calc:v=>({
+    value:fmt(v.r*v.alpha)+" m/s²",
+    steps:[
+      `aₜ = rα`,
+      `aₜ = ${v.r} × ${v.alpha}`,
+      `aₜ = ${fmt(v.r*v.alpha)} m/s²`
+    ]
+  })
+},
+
+{
+  id:"angular-motion",
+  category:"Circular Motion & Torque",
+  name:"Angular Position",
+  formula:"θ = ωt",
+  unit:"rad",
+  inputs:[
+    ["omega","Angular velocity (rad/s)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.omega*v.t)+" rad",
+    steps:[
+      `θ = ωt`,
+      `θ = ${v.omega} × ${v.t}`,
+      `θ = ${fmt(v.omega*v.t)} rad`
+    ]
+  })
+},
+
+{
+  id:"angular-final",
+  category:"Circular Motion & Torque",
+  name:"Angular Velocity with Acceleration",
+  formula:"ω = ω₀ + αt",
+  unit:"rad/s",
+  inputs:[
+    ["omega0","Initial angular velocity (rad/s)"],
+    ["alpha","Angular acceleration (rad/s²)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.omega0+v.alpha*v.t)+" rad/s",
+    steps:[
+      `ω = ω₀ + αt`,
+      `ω = ${v.omega0} + ${v.alpha} × ${v.t}`,
+      `ω = ${fmt(v.omega0+v.alpha*v.t)} rad/s`
+    ]
+  })
+},
+
+{
+  id:"angular-displacement-accel",
+  category:"Circular Motion & Torque",
+  name:"Angular Displacement with Acceleration",
+  formula:"θ = ω₀t + ½αt²",
+  unit:"rad",
+  inputs:[
+    ["omega0","Initial angular velocity (rad/s)"],
+    ["alpha","Angular acceleration (rad/s²)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>{
+    const r=v.omega0*v.t+.5*v.alpha*v.t*v.t;
+    return {
+      value:fmt(r)+" rad",
+      steps:[
+        `θ = ω₀t + ½αt²`,
+        `θ = ${v.omega0}(${v.t}) + ½(${v.alpha})(${v.t})²`,
+        `θ = ${fmt(r)} rad`
+      ]
+    };
+  }
+},
+
+{
+  id:"angular-equation",
+  category:"Circular Motion & Torque",
+  name:"Angular Motion Equation",
+  formula:"ω² = ω₀² + 2αθ",
+  unit:"rad/s",
+  inputs:[
+    ["omega0","Initial angular velocity (rad/s)"],
+    ["alpha","Angular acceleration (rad/s²)"],
+    ["theta","Angular displacement (rad)"]
+  ],
+  calc:v=>{
+    const r=Math.sqrt(v.omega0*v.omega0+2*v.alpha*v.theta);
+    return {
+      value:fmt(r)+" rad/s",
+      steps:[
+        `ω² = ω₀² + 2αθ`,
+        `ω = √(${v.omega0}² + 2(${v.alpha})(${v.theta}))`,
+        `ω = ${fmt(r)} rad/s`
+      ]
+    };
+  }
+},
+
+{
+  id:"rotational-torque",
+  category:"Circular Motion & Torque",
+  name:"Rotational Newton's Second Law",
+  formula:"τ = Iα",
+  unit:"N·m",
+  inputs:[
+    ["I","Moment of inertia (kg·m²)"],
+    ["alpha","Angular acceleration (rad/s²)"]
+  ],
+  calc:v=>({
+    value:fmt(v.I*v.alpha)+" N·m",
+    steps:[
+      `τ = Iα`,
+      `τ = ${v.I} × ${v.alpha}`,
+      `τ = ${fmt(v.I*v.alpha)} N·m`
+    ]
+  })
+},
+
+{
+  id:"moment-hoop-axis",
+  category:"Circular Motion & Torque",
+  name:"Moment of Inertia — Hoop",
+  formula:"I = MR²",
+  unit:"kg·m²",
+  inputs:[
+    ["M","Mass (kg)"],
+    ["R","Radius (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.M*v.R*v.R)+" kg·m²",
+    steps:[
+      `I = MR²`,
+      `I = ${v.M} × ${v.R}²`,
+      `I = ${fmt(v.M*v.R*v.R)} kg·m²`
+    ]
+  })
+},
+
+{
+  id:"moment-disk",
+  category:"Circular Motion & Torque",
+  name:"Moment of Inertia — Solid Cylinder / Disk",
+  formula:"I = ½MR²",
+  unit:"kg·m²",
+  inputs:[
+    ["M","Mass (kg)"],
+    ["R","Radius (m)"]
+  ],
+  calc:v=>({
+    value:fmt(.5*v.M*v.R*v.R)+" kg·m²",
+    steps:[
+      `I = ½MR²`,
+      `I = ½(${v.M})(${v.R})²`,
+      `I = ${fmt(.5*v.M*v.R*v.R)} kg·m²`
+    ]
+  })
+},
+
+{
+  id:"moment-rod-center",
+  category:"Circular Motion & Torque",
+  name:"Moment of Inertia — Rod About Center",
+  formula:"I = ML²/12",
+  unit:"kg·m²",
+  inputs:[
+    ["M","Mass (kg)"],
+    ["L","Length (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.M*v.L*v.L/12)+" kg·m²",
+    steps:[
+      `I = ML²/12`,
+      `I = ${v.M} × ${v.L}² / 12`,
+      `I = ${fmt(v.M*v.L*v.L/12)} kg·m²`
+    ]
+  })
+},
+
+{
+  id:"moment-rod-end",
+  category:"Circular Motion & Torque",
+  name:"Moment of Inertia — Rod About End",
+  formula:"I = ML²/3",
+  unit:"kg·m²",
+  inputs:[
+    ["M","Mass (kg)"],
+    ["L","Length (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.M*v.L*v.L/3)+" kg·m²",
+    steps:[
+      `I = ML²/3`,
+      `I = ${v.M} × ${v.L}² / 3`,
+      `I = ${fmt(v.M*v.L*v.L/3)} kg·m²`
+    ]
+  })
+},
+
+{
+  id:"moment-sphere",
+  category:"Circular Motion & Torque",
+  name:"Moment of Inertia — Solid Sphere",
+  formula:"I = 2MR²/5",
+  unit:"kg·m²",
+  inputs:[
+    ["M","Mass (kg)"],
+    ["R","Radius (m)"]
+  ],
+  calc:v=>({
+    value:fmt(2*v.M*v.R*v.R/5)+" kg·m²",
+    steps:[
+      `I = 2MR²/5`,
+      `I = 2(${v.M})(${v.R})² / 5`,
+      `I = ${fmt(2*v.M*v.R*v.R/5)} kg·m²`
+    ]
+  })
+},
+
+{
+  id:"moment-shell",
+  category:"Circular Motion & Torque",
+  name:"Moment of Inertia — Thin Spherical Shell",
+  formula:"I = 2MR²/3",
+  unit:"kg·m²",
+  inputs:[
+    ["M","Mass (kg)"],
+    ["R","Radius (m)"]
+  ],
+  calc:v=>({
+    value:fmt(2*v.M*v.R*v.R/3)+" kg·m²",
+    steps:[
+      `I = 2MR²/3`,
+      `I = 2(${v.M})(${v.R})² / 3`,
+      `I = ${fmt(2*v.M*v.R*v.R/3)} kg·m²`
+    ]
+  })
+},
+
+
+/* =========================
+   MOMENTUM
+   ========================= */
+
+{
+  id:"impulse",
+  category:"Momentum & Impulse",
+  name:"Impulse",
+  formula:"J = FΔt",
+  unit:"N·s",
+  inputs:[
+    ["F","Force (N)"],
+    ["t","Time interval (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.F*v.t)+" N·s",
+    steps:[
+      `J = FΔt`,
+      `J = ${v.F} × ${v.t}`,
+      `J = ${fmt(v.F*v.t)} N·s`
+    ]
+  })
+},
+
+{
+  id:"momentum",
+  category:"Momentum & Impulse",
+  name:"Momentum",
+  formula:"p = mv",
+  unit:"kg·m/s",
+  inputs:[
+    ["m","Mass (kg)"],
+    ["v","Velocity (m/s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.m*v.v)+" kg·m/s",
+    steps:[
+      `p = mv`,
+      `p = ${v.m} × ${v.v}`,
+      `p = ${fmt(v.m*v.v)} kg·m/s`
+    ]
+  })
+},
+
+{
+  id:"momentum-change",
+  category:"Momentum & Impulse",
+  name:"Change in Momentum",
+  formula:"FΔt = mvf − mvi",
+  unit:"N·s",
+  inputs:[
+    ["m","Mass (kg)"],
+    ["vf","Final velocity (m/s)"],
+    ["vi","Initial velocity (m/s)"]
+  ],
+  calc:v=>{
+    const r=v.m*(v.vf-v.vi);
+    return {
+      value:fmt(r)+" N·s",
+      steps:[
+        `FΔt = m(vf − vi)`,
+        `FΔt = ${v.m}(${v.vf} − ${v.vi})`,
+        `FΔt = ${fmt(r)} N·s`
+      ]
+    };
+  }
+},
+
+{
+  id:"angular-momentum",
+  category:"Momentum & Impulse",
+  name:"Angular Momentum",
+  formula:"L = Iω",
+  unit:"kg·m²/s",
+  inputs:[
+    ["I","Moment of inertia (kg·m²)"],
+    ["omega","Angular velocity (rad/s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.I*v.omega)+" kg·m²/s",
+    steps:[
+      `L = Iω`,
+      `L = ${v.I} × ${v.omega}`,
+      `L = ${fmt(v.I*v.omega)} kg·m²/s`
+    ]
+  })
+},
+
+{
+  id:"angular-momentum-rate",
+  category:"Momentum & Impulse",
+  name:"Torque from Angular Momentum",
+  formula:"τ = ΔL / Δt",
+  unit:"N·m",
+  inputs:[
+    ["L","Change in angular momentum"],
+    ["t","Time interval (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.L/v.t)+" N·m",
+    steps:[
+      `τ = ΔL / Δt`,
+      `τ = ${v.L} / ${v.t}`,
+      `τ = ${fmt(v.L/v.t)} N·m`
+    ]
+  })
+},
+
+
+/* =========================
+   GRAVITY
+   ========================= */
+
+{
+  id:"gravitational-force",
+  category:"Gravitation & Kepler's Laws",
+  name:"Gravitational Force",
+  formula:"F = Gm₁m₂/r²",
+  unit:"N",
+  inputs:[
+    ["G","Gravitational constant"],
+    ["m1","Mass 1 (kg)"],
+    ["m2","Mass 2 (kg)"],
+    ["r","Distance (m)"]
+  ],
+  calc:v=>{
+    const r=v.G*v.m1*v.m2/(v.r*v.r);
+    return {
+      value:fmt(r)+" N",
+      steps:[
+        `F = Gm₁m₂/r²`,
+        `F = (${v.G})(${v.m1})(${v.m2}) / ${v.r}²`,
+        `F = ${fmt(r)} N`
+      ]
+    };
+  }
+},
+
+{
+  id:"gravity-surface",
+  category:"Gravitation & Kepler's Laws",
+  name:"Acceleration Due to Gravity",
+  formula:"g = GM/R²",
+  unit:"m/s²",
+  inputs:[
+    ["G","Gravitational constant"],
+    ["M","Mass of planet (kg)"],
+    ["R","Radius of planet (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.G*v.M/(v.R*v.R))+" m/s²",
+    steps:[
+      `g = GM/R²`,
+      `g = ${v.G} × ${v.M} / ${v.R}²`,
+      `g = ${fmt(v.G*v.M/(v.R*v.R))} m/s²`
+    ]
+  })
+},
+
+{
+  id:"orbital-velocity",
+  category:"Gravitation & Kepler's Laws",
+  name:"Orbital Velocity",
+  formula:"v = √(GM/r)",
+  unit:"m/s",
+  inputs:[
+    ["G","Gravitational constant"],
+    ["M","Mass (kg)"],
+    ["r","Orbital radius (m)"]
+  ],
+  calc:v=>{
+    const r=Math.sqrt(v.G*v.M/v.r);
+    return {
+      value:fmt(r)+" m/s",
+      steps:[
+        `v = √(GM/r)`,
+        `v = √((${v.G} × ${v.M}) / ${v.r})`,
+        `v = ${fmt(r)} m/s`
+      ]
+    };
+  }
+},
+
+{
+  id:"escape-velocity",
+  category:"Gravitation & Kepler's Laws",
+  name:"Escape Velocity",
+  formula:"vesc = √(2GM/R)",
+  unit:"m/s",
+  inputs:[
+    ["G","Gravitational constant"],
+    ["M","Mass (kg)"],
+    ["R","Radius (m)"]
+  ],
+  calc:v=>{
+    const r=Math.sqrt(2*v.G*v.M/v.R);
+    return {
+      value:fmt(r)+" m/s",
+      steps:[
+        `vesc = √(2GM/R)`,
+        `vesc = ${fmt(r)} m/s`
+      ]
+    };
+  }
+},
+
+{
+  id:"kepler-third",
+  category:"Gravitation & Kepler's Laws",
+  name:"Kepler's Third Law",
+  formula:"T²/r³ = 4π²/GM",
+  unit:"s²/m³",
+  inputs:[
+    ["T","Orbital period (s)"],
+    ["r","Orbital radius (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.T*v.T/(v.r*v.r*v.r)),
+    steps:[
+      `T²/r³ = ${v.T}²/${v.r}³`,
+      `T²/r³ = ${fmt(v.T*v.T/(v.r*v.r*v.r))}`
+    ]
+  })
+},
+
+{
+  id:"kepler-period",
+  category:"Gravitation & Kepler's Laws",
+  name:"Orbital Period",
+  formula:"T = 2π√(r³/GM)",
+  unit:"s",
+  inputs:[
+    ["r","Orbital radius (m)"],
+    ["G","Gravitational constant"],
+    ["M","Mass (kg)"]
+  ],
+  calc:v=>{
+    const r=2*Math.PI*Math.sqrt(v.r**3/(v.G*v.M));
+    return {
+      value:fmt(r)+" s",
+      steps:[
+        `T = 2π√(r³/GM)`,
+        `T = ${fmt(r)} s`
+      ]
+    };
+  }
+},
+
+
+/* =========================
+   WORK / ENERGY / POWER
+   ========================= */
+
+{
+  id:"work",
+  category:"Work, Energy & Power",
+  name:"Work",
+  formula:"W = Fd cosθ",
+  unit:"J",
+  inputs:[
+    ["F","Force (N)"],
+    ["d","Displacement (m)"],
+    ["theta","Angle (degrees)"]
+  ],
+  calc:v=>{
+    const r=v.F*v.d*Math.cos(v.theta*Math.PI/180);
+    return {
+      value:fmt(r)+" J",
+      steps:[
+        `W = Fd cosθ`,
+        `W = ${v.F} × ${v.d} × cos(${v.theta}°)`,
+        `W = ${fmt(r)} J`
+      ]
+    };
+  }
+},
+
+{
+  id:"kinetic-energy",
+  category:"Work, Energy & Power",
+  name:"Kinetic Energy",
+  formula:"KE = ½mv²",
+  unit:"J",
+  inputs:[
+    ["m","Mass (kg)"],
+    ["v","Velocity (m/s)"]
+  ],
+  calc:v=>({
+    value:fmt(.5*v.m*v.v*v.v)+" J",
+    steps:[
+      `KE = ½mv²`,
+      `KE = ½(${v.m})(${v.v})²`,
+      `KE = ${fmt(.5*v.m*v.v*v.v)} J`
+    ]
+  })
+},
+
+{
+  id:"rotational-energy",
+  category:"Work, Energy & Power",
+  name:"Rotational Kinetic Energy",
+  formula:"KE = ½Iω²",
+  unit:"J",
+  inputs:[
+    ["I","Moment of inertia (kg·m²)"],
+    ["omega","Angular velocity (rad/s)"]
+  ],
+  calc:v=>({
+    value:fmt(.5*v.I*v.omega*v.omega)+" J",
+    steps:[
+      `KE = ½Iω²`,
+      `KE = ½(${v.I})(${v.omega})²`,
+      `KE = ${fmt(.5*v.I*v.omega*v.omega)} J`
+    ]
+  })
+},
+
+{
+  id:"potential-energy",
+  category:"Work, Energy & Power",
+  name:"Gravitational Potential Energy",
+  formula:"PE = mgh",
+  unit:"J",
+  inputs:[
+    ["m","Mass (kg)"],
+    ["g","Gravity (m/s²)"],
+    ["h","Height (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.m*v.g*v.h)+" J",
+    steps:[
+      `PE = mgh`,
+      `PE = ${v.m} × ${v.g} × ${v.h}`,
+      `PE = ${fmt(v.m*v.g*v.h)} J`
+    ]
+  })
+},
+
+{
+  id:"spring-energy",
+  category:"Work, Energy & Power",
+  name:"Spring Potential Energy",
+  formula:"PE = ½kx²",
+  unit:"J",
+  inputs:[
+    ["k","Spring constant (N/m)"],
+    ["x","Extension (m)"]
+  ],
+  calc:v=>({
+    value:fmt(.5*v.k*v.x*v.x)+" J",
+    steps:[
+      `PE = ½kx²`,
+      `PE = ½(${v.k})(${v.x})²`,
+      `PE = ${fmt(.5*v.k*v.x*v.x)} J`
+    ]
+  })
+},
+
+{
+  id:"power",
+  category:"Work, Energy & Power",
+  name:"Power",
+  formula:"P = W/t",
+  unit:"W",
+  inputs:[
+    ["W","Work (J)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.W/v.t)+" W",
+    steps:[
+      `P = W/t`,
+      `P = ${v.W} / ${v.t}`,
+      `P = ${fmt(v.W/v.t)} W`
+    ]
+  })
+},
+
+{
+  id:"work-energy",
+  category:"Work, Energy & Power",
+  name:"Work-Energy Theorem",
+  formula:"Wnet = ΔK = Kf − Ki",
+  unit:"J",
+  inputs:[
+    ["Kf","Final kinetic energy (J)"],
+    ["Ki","Initial kinetic energy (J)"]
+  ],
+  calc:v=>({
+    value:fmt(v.Kf-v.Ki)+" J",
+    steps:[
+      `Wnet = Kf − Ki`,
+      `Wnet = ${v.Kf} − ${v.Ki}`,
+      `Wnet = ${fmt(v.Kf-v.Ki)} J`
+    ]
+  })
+},
+
+
+/* =========================
+   MOMENTUM / SYSTEM
+   ========================= */
+
+{
+  id:"center-mass",
+  category:"System of Particles",
+  name:"Centre of Mass",
+  formula:"xcm = Σ(mixi) / Σmi",
+  unit:"m",
+  inputs:[
+    ["m1","Mass 1 (kg)"],
+    ["x1","Position 1 (m)"],
+    ["m2","Mass 2 (kg)"],
+    ["x2","Position 2 (m)"]
+  ],
+  calc:v=>{
+    const r=(v.m1*v.x1+v.m2*v.x2)/(v.m1+v.m2);
+    return {
+      value:fmt(r)+" m",
+      steps:[
+        `xcm = (m₁x₁ + m₂x₂)/(m₁ + m₂)`,
+        `xcm = (${v.m1}×${v.x1} + ${v.m2}×${v.x2}) / (${v.m1}+${v.m2})`,
+        `xcm = ${fmt(r)} m`
+      ]
+    };
+  }
+},
+
+{
+  id:"acceleration-com",
+  category:"System of Particles",
+  name:"Acceleration of Centre of Mass",
+  formula:"acm = R/M",
+  unit:"m/s²",
+  inputs:[
+    ["R","Resultant force (N)"],
+    ["M","Total mass (kg)"]
+  ],
+  calc:v=>({
+    value:fmt(v.R/v.M)+" m/s²",
+    steps:[
+      `acm = R/M`,
+      `acm = ${v.R}/${v.M}`,
+      `acm = ${fmt(v.R/v.M)} m/s²`
+    ]
+  })
+},
+
+
+/* =========================
+   FLUIDS / ELASTICITY
+   ========================= */
+
+{
+  id:"density",
+  category:"Properties of Solids & Fluids",
+  name:"Density",
+  formula:"ρ = m/V",
+  unit:"kg/m³",
+  inputs:[
+    ["m","Mass (kg)"],
+    ["V","Volume (m³)"]
+  ],
+  calc:v=>({
+    value:fmt(v.m/v.V)+" kg/m³",
+    steps:[
+      `ρ = m/V`,
+      `ρ = ${v.m}/${v.V}`,
+      `ρ = ${fmt(v.m/v.V)} kg/m³`
+    ]
+  })
+},
+
+{
+  id:"pressure",
+  category:"Properties of Solids & Fluids",
+  name:"Pressure",
+  formula:"P = F/A",
+  unit:"Pa",
+  inputs:[
+    ["F","Force (N)"],
+    ["A","Area (m²)"]
+  ],
+  calc:v=>({
+    value:fmt(v.F/v.A)+" Pa",
+    steps:[
+      `P = F/A`,
+      `P = ${v.F}/${v.A}`,
+      `P = ${fmt(v.F/v.A)} Pa`
+    ]
+  })
+},
+
+{
+  id:"fluid-pressure",
+  category:"Properties of Solids & Fluids",
+  name:"Fluid Pressure",
+  formula:"P = ρgh",
+  unit:"Pa",
+  inputs:[
+    ["rho","Density (kg/m³)"],
+    ["g","Gravity (m/s²)"],
+    ["h","Depth/height (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.rho*v.g*v.h)+" Pa",
+    steps:[
+      `P = ρgh`,
+      `P = ${v.rho} × ${v.g} × ${v.h}`,
+      `P = ${fmt(v.rho*v.g*v.h)} Pa`
+    ]
+  })
+},
+
+{
+  id:"pascal",
+  category:"Properties of Solids & Fluids",
+  name:"Pascal's Law",
+  formula:"F₁/A₁ = F₂/A₂",
+  unit:"N",
+  inputs:[
+    ["F1","Force 1 (N)"],
+    ["A1","Area 1 (m²)"],
+    ["A2","Area 2 (m²)"]
+  ],
+  calc:v=>{
+    const r=v.F1*v.A2/v.A1;
+    return {
+      value:fmt(r)+" N",
+      steps:[
+        `F₂ = F₁A₂/A₁`,
+        `F₂ = ${v.F1} × ${v.A2} / ${v.A1}`,
+        `F₂ = ${fmt(r)} N`
+      ]
+    };
+  }
+},
+
+{
+  id:"stress",
+  category:"Properties of Solids & Fluids",
+  name:"Stress",
+  formula:"Stress = F/A",
+  unit:"Pa",
+  inputs:[
+    ["F","Force (N)"],
+    ["A","Area (m²)"]
+  ],
+  calc:v=>({
+    value:fmt(v.F/v.A)+" Pa",
+    steps:[
+      `Stress = F/A`,
+      `Stress = ${v.F}/${v.A}`,
+      `Stress = ${fmt(v.F/v.A)} Pa`
+    ]
+  })
+},
+
+{
+  id:"strain",
+  category:"Properties of Solids & Fluids",
+  name:"Strain",
+  formula:"ε = ΔL/L",
+  unit:"dimensionless",
+  inputs:[
+    ["dL","Change in length (m)"],
+    ["L","Original length (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.dL/v.L),
+    steps:[
+      `ε = ΔL/L`,
+      `ε = ${v.dL}/${v.L}`,
+      `ε = ${fmt(v.dL/v.L)}`
+    ]
+  })
+},
+
+{
+  id:"young-modulus",
+  category:"Properties of Solids & Fluids",
+  name:"Young's Modulus",
+  formula:"Y = Stress / Strain",
+  unit:"Pa",
+  inputs:[
+    ["stress","Stress (Pa)"],
+    ["strain","Strain"]
+  ],
+  calc:v=>({
+    value:fmt(v.stress/v.strain)+" Pa",
+    steps:[
+      `Y = Stress / Strain`,
+      `Y = ${v.stress}/${v.strain}`,
+      `Y = ${fmt(v.stress/v.strain)} Pa`
+    ]
+  })
+},
+
+{
+  id:"shear-modulus",
+  category:"Properties of Solids & Fluids",
+  name:"Shear Modulus",
+  formula:"G = Shear stress / Shear strain",
+  unit:"Pa",
+  inputs:[
+    ["stress","Shear stress (Pa)"],
+    ["strain","Shear strain"]
+  ],
+  calc:v=>({
+    value:fmt(v.stress/v.strain)+" Pa",
+    steps:[
+      `G = Shear stress / Shear strain`,
+      `G = ${v.stress}/${v.strain}`,
+      `G = ${fmt(v.stress/v.strain)} Pa`
+    ]
+  })
+},
+
+
+/* =========================
+   THERMODYNAMICS
+   ========================= */
+
+{
+  id:"heat",
+  category:"Thermodynamics",
+  name:"Heat",
+  formula:"Q = mcΔT",
+  unit:"J",
+  inputs:[
+    ["m","Mass (kg)"],
+    ["c","Specific heat capacity (J/kg·K)"],
+    ["dT","Temperature change (K)"]
+  ],
+  calc:v=>({
+    value:fmt(v.m*v.c*v.dT)+" J",
+    steps:[
+      `Q = mcΔT`,
+      `Q = ${v.m} × ${v.c} × ${v.dT}`,
+      `Q = ${fmt(v.m*v.c*v.dT)} J`
+    ]
+  })
+},
+
+{
+  id:"internal-energy",
+  category:"Thermodynamics",
+  name:"First Law of Thermodynamics",
+  formula:"ΔU = Q − W",
+  unit:"J",
+  inputs:[
+    ["Q","Heat supplied (J)"],
+    ["W","Work done (J)"]
+  ],
+  calc:v=>({
+    value:fmt(v.Q-v.W)+" J",
+    steps:[
+      `ΔU = Q − W`,
+      `ΔU = ${v.Q} − ${v.W}`,
+      `ΔU = ${fmt(v.Q-v.W)} J`
+    ]
+  })
+},
+
+{
+  id:"thermo-work",
+  category:"Thermodynamics",
+  name:"Pressure-Volume Work",
+  formula:"W = PΔV",
+  unit:"J",
+  inputs:[
+    ["P","Pressure (Pa)"],
+    ["dV","Change in volume (m³)"]
+  ],
+  calc:v=>({
+    value:fmt(v.P*v.dV)+" J",
+    steps:[
+      `W = PΔV`,
+      `W = ${v.P} × ${v.dV}`,
+      `W = ${fmt(v.P*v.dV)} J`
+    ]
+  })
+},
+
+{
+  id:"ideal-gas",
+  category:"Thermodynamics",
+  name:"Ideal Gas Relation",
+  formula:"PV/T = constant",
+  inputs:[
+    ["P","Pressure"],
+    ["V","Volume"],
+    ["T","Temperature (K)"]
+  ],
+  calc:v=>({
+    value:fmt(v.P*v.V/v.T),
+    steps:[
+      `PV/T = constant`,
+      `Constant = (${v.P} × ${v.V}) / ${v.T}`,
+      `Constant = ${fmt(v.P*v.V/v.T)}`
+    ]
+  })
+},
+
+{
+  id:"latent-heat",
+  category:"Thermodynamics",
+  name:"Latent Heat",
+  formula:"L = Q/M",
+  unit:"J/kg",
+  inputs:[
+    ["Q","Heat energy (J)"],
+    ["M","Mass (kg)"]
+  ],
+  calc:v=>({
+    value:fmt(v.Q/v.M)+" J/kg",
+    steps:[
+      `L = Q/M`,
+      `L = ${v.Q}/${v.M}`,
+      `L = ${fmt(v.Q/v.M)} J/kg`
+    ]
+  })
+},
+
+{
+  id:"heat-fusion",
+  category:"Thermodynamics",
+  name:"Heat of Fusion",
+  formula:"Q = mΔHF",
+  unit:"J",
+  inputs:[
+    ["m","Mass (kg)"],
+    ["HF","Heat of fusion (J/kg)"]
+  ],
+  calc:v=>({
+    value:fmt(v.m*v.HF)+" J",
+    steps:[
+      `Q = mΔHF`,
+      `Q = ${v.m} × ${v.HF}`,
+      `Q = ${fmt(v.m*v.HF)} J`
+    ]
+  })
+},
+
+{
+  id:"fahrenheit",
+  category:"Thermodynamics & Temperature",
+  name:"Celsius to Fahrenheit",
+  formula:"F = (9/5)C + 32",
+  unit:"°F",
+  inputs:[
+    ["C","Temperature (°C)"]
+  ],
+  calc:v=>({
+    value:fmt((9/5)*v.C+32)+" °F",
+    steps:[
+      `F = (9/5)C + 32`,
+      `F = (9/5)(${v.C}) + 32`,
+      `F = ${fmt((9/5)*v.C+32)} °F`
+    ]
+  })
+},
+
+
+/* =========================
+   WAVES
+   ========================= */
+
+{
+  id:"wave-speed",
+  category:"Waves & Sound",
+  name:"Wave Speed",
+  formula:"v = fλ",
+  unit:"m/s",
+  inputs:[
+    ["f","Frequency (Hz)"],
+    ["lambda","Wavelength (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.f*v.lambda)+" m/s",
+    steps:[
+      `v = fλ`,
+      `v = ${v.f} × ${v.lambda}`,
+      `v = ${fmt(v.f*v.lambda)} m/s`
+    ]
+  })
+},
+
+{
+  id:"frequency",
+  category:"Waves & Sound",
+  name:"Frequency",
+  formula:"f = v/λ",
+  unit:"Hz",
+  inputs:[
+    ["v","Wave speed (m/s)"],
+    ["lambda","Wavelength (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.v/v.lambda)+" Hz",
+    steps:[
+      `f = v/λ`,
+      `f = ${v.v}/${v.lambda}`,
+      `f = ${fmt(v.v/v.lambda)} Hz`
+    ]
+  })
+},
+
+{
+  id:"period-frequency",
+  category:"Waves & Sound",
+  name:"Time Period",
+  formula:"T = 1/f",
+  unit:"s",
+  inputs:[
+    ["f","Frequency (Hz)"]
+  ],
+  calc:v=>({
+    value:fmt(1/v.f)+" s",
+    steps:[
+      `T = 1/f`,
+      `T = 1/${v.f}`,
+      `T = ${fmt(1/v.f)} s`
+    ]
+  })
+},
+
+{
+  id:"wave-equation",
+  category:"Waves & Sound",
+  name:"Wave Equation",
+  formula:"y = a sin(ωt − kx + φ)",
+  inputs:[
+    ["a","Amplitude"],
+    ["omega","Angular frequency"],
+    ["t","Time"],
+    ["k","Wave number"],
+    ["x","Position"],
+    ["phi","Phase constant (rad)"]
+  ],
+  calc:v=>{
+    const r=v.a*Math.sin(v.omega*v.t-v.k*v.x+v.phi);
+    return {
+      value:fmt(r),
+      steps:[
+        `y = a sin(ωt − kx + φ)`,
+        `y = ${v.a} sin(${v.omega}×${v.t} − ${v.k}×${v.x} + ${v.phi})`,
+        `y = ${fmt(r)}`
+      ]
+    };
+  }
+},
+
+{
+  id:"intensity",
+  category:"Waves & Sound",
+  name:"Wave Intensity",
+  formula:"I = P/A",
+  unit:"W/m²",
+  inputs:[
+    ["P","Power (W)"],
+    ["A","Area (m²)"]
+  ],
+  calc:v=>({
+    value:fmt(v.P/v.A)+" W/m²",
+    steps:[
+      `I = P/A`,
+      `I = ${v.P}/${v.A}`,
+      `I = ${fmt(v.P/v.A)} W/m²`
+    ]
+  })
+},
+
+{
+  id:"pendulum",
+  category:"Waves & Sound",
+  name:"Simple Pendulum",
+  formula:"T = 2π√(L/g)",
+  unit:"s",
+  inputs:[
+    ["L","Length (m)"],
+    ["g","Gravity (m/s²)"]
+  ],
+  calc:v=>{
+    const r=2*Math.PI*Math.sqrt(v.L/v.g);
+    return {
+      value:fmt(r)+" s",
+      steps:[
+        `T = 2π√(L/g)`,
+        `T = 2π√(${v.L}/${v.g})`,
+        `T = ${fmt(r)} s`
+      ]
+    };
+  }
+},
+
+
+/* =========================
+   CURRENT ELECTRICITY
+   ========================= */
+
+{
+  id:"current",
+  category:"Current Electricity",
+  name:"Electric Current",
+  formula:"I = Q/t",
+  unit:"A",
+  inputs:[
+    ["Q","Charge (C)"],
+    ["t","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.Q/v.t)+" A",
+    steps:[
+      `I = Q/t`,
+      `I = ${v.Q}/${v.t}`,
+      `I = ${fmt(v.Q/v.t)} A`
+    ]
+  })
+},
+
+{
+  id:"ohms-law",
+  category:"Current Electricity",
+  name:"Ohm's Law",
+  formula:"V = IR",
+  unit:"V",
+  inputs:[
+    ["I","Current (A)"],
+    ["R","Resistance (Ω)"]
+  ],
+  calc:v=>({
+    value:fmt(v.I*v.R)+" V",
+    steps:[
+      `V = IR`,
+      `V = ${v.I} × ${v.R}`,
+      `V = ${fmt(v.I*v.R)} V`
+    ]
+  })
+},
+
+{
+  id:"resistance-wire",
+  category:"Current Electricity",
+  name:"Resistance of a Wire",
+  formula:"R = ρL/A",
+  unit:"Ω",
+  inputs:[
+    ["rho","Resistivity (Ω·m)"],
+    ["L","Length (m)"],
+    ["A","Area (m²)"]
+  ],
+  calc:v=>({
+    value:fmt(v.rho*v.L/v.A)+" Ω",
+    steps:[
+      `R = ρL/A`,
+      `R = ${v.rho} × ${v.L} / ${v.A}`,
+      `R = ${fmt(v.rho*v.L/v.A)} Ω`
+    ]
+  })
+},
+
+{
+  id:"electric-power",
+  category:"Current Electricity",
+  name:"Electric Power",
+  formula:"P = VI = I²R = V²/R",
+  unit:"W",
+  inputs:[
+    ["V","Voltage (V)"],
+    ["I","Current (A)"]
+  ],
+  calc:v=>({
+    value:fmt(v.V*v.I)+" W",
+    steps:[
+      `P = VI`,
+      `P = ${v.V} × ${v.I}`,
+      `P = ${fmt(v.V*v.I)} W`
+    ]
+  })
+},
+
+{
+  id:"series-resistance",
+  category:"Current Electricity",
+  name:"Series Resistance",
+  formula:"Req = R₁ + R₂ + R₃ + ...",
+  unit:"Ω",
+  inputs:[
+    ["R1","R₁ (Ω)"],
+    ["R2","R₂ (Ω)"],
+    ["R3","R₃ (Ω)"]
+  ],
+  calc:v=>{
+    const r=v.R1+v.R2+v.R3;
+    return {
+      value:fmt(r)+" Ω",
+      steps:[
+        `Req = R₁ + R₂ + R₃`,
+        `Req = ${v.R1} + ${v.R2} + ${v.R3}`,
+        `Req = ${fmt(r)} Ω`
+      ]
+    };
+  }
+},
+
+{
+  id:"parallel-resistance",
+  category:"Current Electricity",
+  name:"Parallel Resistance",
+  formula:"1/Req = 1/R₁ + 1/R₂ + 1/R₃",
+  unit:"Ω",
+  inputs:[
+    ["R1","R₁ (Ω)"],
+    ["R2","R₂ (Ω)"],
+    ["R3","R₃ (Ω)"]
+  ],
+  calc:v=>{
+    const r=1/(1/v.R1+1/v.R2+1/v.R3);
+    return {
+      value:fmt(r)+" Ω",
+      steps:[
+        `1/Req = 1/${v.R1} + 1/${v.R2} + 1/${v.R3}`,
+        `Req = ${fmt(r)} Ω`
+      ]
+    };
+  }
+},
+
+{
+  id:"cell-voltage",
+  category:"Current Electricity",
+  name:"Cell Terminal Voltage",
+  formula:"E = IR + Ir",
+  unit:"V",
+  inputs:[
+    ["I","Current (A)"],
+    ["R","External resistance (Ω)"],
+    ["r","Internal resistance (Ω)"]
+  ],
+  calc:v=>({
+    value:fmt(v.I*(v.R+v.r))+" V",
+    steps:[
+      `E = IR + Ir`,
+      `E = ${v.I}×${v.R} + ${v.I}×${v.r}`,
+      `E = ${fmt(v.I*(v.R+v.r))} V`
+    ]
+  })
+},
+
+{
+  id:"cell-current",
+  category:"Current Electricity",
+  name:"Current from Cell",
+  formula:"I = E/(R+r)",
+  unit:"A",
+  inputs:[
+    ["E","EMF (V)"],
+    ["R","External resistance (Ω)"],
+    ["r","Internal resistance (Ω)"]
+  ],
+  calc:v=>({
+    value:fmt(v.E/(v.R+v.r))+" A",
+    steps:[
+      `I = E/(R+r)`,
+      `I = ${v.E}/(${v.R}+${v.r})`,
+      `I = ${fmt(v.E/(v.R+v.r))} A`
+    ]
+  })
+},
+
+
+/* =========================
+   ELECTROMAGNETISM
+   ========================= */
+
+{
+  id:"induced-emf",
+  category:"Electromagnetism",
+  name:"Induced EMF",
+  formula:"e = −N(dΦB/dt)",
+  unit:"V",
+  inputs:[
+    ["N","Number of turns"],
+    ["dPhi","Change in magnetic flux (Wb)"],
+    ["dt","Time interval (s)"]
+  ],
+  calc:v=>({
+    value:fmt(-v.N*v.dPhi/v.dt)+" V",
+    steps:[
+      `e = −N(dΦB/dt)`,
+      `e = −${v.N} × (${v.dPhi}/${v.dt})`,
+      `e = ${fmt(-v.N*v.dPhi/v.dt)} V`
+    ]
+  })
+},
+
+{
+  id:"hubble",
+  category:"Astrophysics",
+  name:"Hubble's Law",
+  formula:"v = H₀r",
+  unit:"km/s",
+  inputs:[
+    ["H","Hubble constant"],
+    ["r","Distance"]
+  ],
+  calc:v=>({
+    value:fmt(v.H*v.r),
+    steps:[
+      `v = H₀r`,
+      `v = ${v.H} × ${v.r}`,
+      `v = ${fmt(v.H*v.r)}`
+    ]
+  })
+},
+
+
+/* =========================
+   ADDITIONAL FORMULAS
+   ========================= */
+
+{
+  id:"displacement-simple",
+  category:"Additional Formula Sheet",
+  name:"Displacement",
+  formula:"Δx = xf − xi",
+  unit:"m",
+  inputs:[
+    ["xf","Final position (m)"],
+    ["xi","Initial position (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.xf-v.xi)+" m",
+    steps:[
+      `Δx = xf − xi`,
+      `Δx = ${v.xf} − ${v.xi}`,
+      `Δx = ${fmt(v.xf-v.xi)} m`
+    ]
+  })
+},
+
+{
+  id:"mass-from-force",
+  category:"Additional Formula Sheet",
+  name:"Mass from Force",
+  formula:"m = F/a",
+  unit:"kg",
+  inputs:[
+    ["F","Force (N)"],
+    ["a","Acceleration (m/s²)"]
+  ],
+  calc:v=>({
+    value:fmt(v.F/v.a)+" kg",
+    steps:[
+      `m = F/a`,
+      `m = ${v.F}/${v.a}`,
+      `m = ${fmt(v.F/v.a)} kg`
+    ]
+  })
+},
+
+{
+  id:"tension",
+  category:"Additional Formula Sheet",
+  name:"Tension",
+  formula:"T = mg + ma",
+  unit:"N",
+  inputs:[
+    ["m","Mass (kg)"],
+    ["g","Gravity (m/s²)"],
+    ["a","Acceleration (m/s²)"]
+  ],
+  calc:v=>({
+    value:fmt(v.m*(v.g+v.a))+" N",
+    steps:[
+      `T = mg + ma`,
+      `T = ${v.m}(${v.g} + ${v.a})`,
+      `T = ${fmt(v.m*(v.g+v.a))} N`
+    ]
+  })
+},
+
+{
+  id:"surface-charge",
+  category:"Electrostatics",
+  name:"Surface Charge Density",
+  formula:"σ = q/A",
+  unit:"C/m²",
+  inputs:[
+    ["q","Charge (C)"],
+    ["A","Area (m²)"]
+  ],
+  calc:v=>({
+    value:fmt(v.q/v.A)+" C/m²",
+    steps:[
+      `σ = q/A`,
+      `σ = ${v.q}/${v.A}`,
+      `σ = ${fmt(v.q/v.A)} C/m²`
+    ]
+  })
+},
+
+{
+  id:"linear-speed",
+  category:"Additional Formula Sheet",
+  name:"Linear Speed from Displacement",
+  formula:"v = ΔS/ΔT",
+  unit:"m/s",
+  inputs:[
+    ["S","Displacement (m)"],
+    ["T","Time (s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.S/v.T)+" m/s",
+    steps:[
+      `v = ΔS/ΔT`,
+      `v = ${v.S}/${v.T}`,
+      `v = ${fmt(v.S/v.T)} m/s`
+    ]
+  })
+},
+
+{
+  id:"position",
+  category:"Additional Formula Sheet",
+  name:"Position Change",
+  formula:"Δx = x₂ − x₁",
+  unit:"m",
+  inputs:[
+    ["x2","Final position (m)"],
+    ["x1","Initial position (m)"]
+  ],
+  calc:v=>({
+    value:fmt(v.x2-v.x1)+" m",
+    steps:[
+      `Δx = x₂ − x₁`,
+      `Δx = ${v.x2} − ${v.x1}`,
+      `Δx = ${fmt(v.x2-v.x1)} m`
+    ]
+  })
+},
+
+{
+  id:"friction",
+  category:"Additional Formula Sheet",
+  name:"Friction Force",
+  formula:"f = μN",
+  unit:"N",
+  inputs:[
+    ["mu","Coefficient of friction"],
+    ["N","Normal force (N)"]
+  ],
+  calc:v=>({
+    value:fmt(v.mu*v.N)+" N",
+    steps:[
+      `f = μN`,
+      `f = ${v.mu} × ${v.N}`,
+      `f = ${fmt(v.mu*v.N)} N`
+    ]
+  })
+},
+
+{
+  id:"refractive-index",
+  category:"Optics",
+  name:"Refractive Index",
+  formula:"n = c/v",
+  inputs:[
+    ["c","Speed of light (m/s)"],
+    ["v","Speed in medium (m/s)"]
+  ],
+  calc:v=>({
+    value:fmt(v.c/v.v),
+    steps:[
+      `n = c/v`,
+      `n = ${v.c}/${v.v}`,
+      `n = ${fmt(v.c/v.v)}`
+    ]
+  })
+},
+
+{
+  id:"centre-three-particles",
+  category:"System of Particles",
+  name:"Centre of Mass — Three Particles",
+  formula:"C = [(x₁+x₂+x₃)/3, (y₁+y₂+y₃)/3]",
+  inputs:[
+    ["x1","x₁"],
+    ["x2","x₂"],
+    ["x3","x₃"],
+    ["y1","y₁"],
+    ["y2","y₂"],
+    ["y3","y₃"]
+  ],
+  calc:v=>{
+    const x=(v.x1+v.x2+v.x3)/3;
+    const y=(v.y1+v.y2+v.y3)/3;
+
+    return {
+      value:`(${fmt(x)}, ${fmt(y)})`,
+      steps:[
+        `x = (${v.x1}+${v.x2}+${v.x3})/3 = ${fmt(x)}`,
+        `y = (${v.y1}+${v.y2}+${v.y3})/3 = ${fmt(y)}`,
+        `C = (${fmt(x)}, ${fmt(y)})`
+      ]
+    };
+  }
+}
+
+];
+
+
+/* =========================================================
+   UTILITY FUNCTIONS
+   ========================================================= */
+
+function fmt(number) {
+
+  if (!Number.isFinite(number)) {
+    return "Undefined";
+  }
+
+  return Number(number.toPrecision(8));
+
+}
+
+
+function escapeHTML(text) {
+
+  return String(text)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================================================
+   BUILD FORMULA DROPDOWN
+   ========================================================= */
+
+function populateFormulas(list = formulas) {
+
+  const select = document.getElementById("kind");
+
+  select.innerHTML = "";
+
+  let currentCategory = "";
+
+  list.forEach(formula => {
+
+    if (formula.category !== currentCategory) {
+
+      currentCategory = formula.category;
+
+      const group = document.createElement("optgroup");
+
+      group.label = currentCategory;
+
+      list
+        .filter(f => f.category === currentCategory)
+        .forEach(f => {
+
+          const option = document.createElement("option");
+
+          option.value = f.id;
+          option.textContent = f.name;
+
+          group.appendChild(option);
+
+        });
+
+      select.appendChild(group);
+
+    }
+
+  });
+
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+function filterFormulas() {
+
+  const query =
+    document
+      .getElementById("formulaSearch")
+      .value
+      .toLowerCase()
+      .trim();
+
+  if (!query) {
+
+    populateFormulas();
+
+    loadFormula();
+
+    return;
+  }
+
+  const filtered = formulas.filter(f =>
+    f.name.toLowerCase().includes(query) ||
+    f.category.toLowerCase().includes(query) ||
+    f.formula.toLowerCase().includes(query)
+  );
+
+  populateFormulas(filtered);
+
+  if (filtered.length) {
+
+    document.getElementById("kind").value =
+      filtered[0].id;
+
+    loadFormula();
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD FORMULA
+   ========================================================= */
+
+function loadFormula() {
+
+  const id =
+    document.getElementById("kind").value;
+
+  const formula =
+    formulas.find(f => f.id === id);
+
+  if (!formula) return;
+
+
+  document.getElementById("formulaDisplay")
+    .textContent = formula.formula;
+
+
+  document.getElementById("formulaDescription")
+    .textContent =
+      formula.description ||
+      `Category: ${formula.category}`;
+
+
+  const container =
+    document.getElementById("inputs");
+
+  container.innerHTML = "";
+
+
+  formula.inputs.forEach((input,index) => {
+
+    const key = input[0];
+    const label = input[1];
+
+    const wrapper =
+      document.createElement("div");
+
+    wrapper.style.marginTop = "1rem";
+
+    wrapper.innerHTML = `
+
+      <label class="label" for="input-${key}">
+        ${escapeHTML(label)}
+      </label>
+
+      <input
+        class="input mono"
+        id="input-${key}"
+        type="number"
+        step="any"
+        placeholder="Enter ${escapeHTML(label)}"
+        value="${defaultValue(key)}">
+
+    `;
+
+    container.appendChild(wrapper);
+
+  });
+
+
+  document.getElementById("answer")
+    .textContent = "—";
+
+  document.getElementById("formulaResult")
+    .textContent = formula.formula;
+
+  document.getElementById("steps")
+    .innerHTML = "";
+
+}
+
+
+/* =========================================================
+   DEFAULT VALUES
+   ========================================================= */
+
+function defaultValue(key) {
+
+  const defaults = {
+
+    g:9.8,
+
+    G:6.673e-11,
+
+    c:3e8,
+
+    m:5,
+
+    M:5,
+
+    a:2,
+
+    u:0,
+
+    v:10,
+
+    t:2,
+
+    d:20,
+
+    d0:0,
+
+    r:2,
+
+    R:2,
+
+    F:10,
+
+    I:2,
+
+    omega:2,
+
+    alpha:1,
+
+    theta:90,
+
+    rho:1000,
+
+    A:2,
+
+    V:2,
+
+    P:100,
+
+    T:2,
+
+    f:2,
+
+    lambda:2,
+
+    Q:100,
+
+    L:2,
+
+    k:100,
+
+    x:.1,
+
+    R1:10,
+
+    R2:20,
+
+    R3:30,
+
+    E:12,
+
+    N:1
+
+  };
+
+  return defaults[key] !== undefined
+    ? defaults[key]
+    : "";
+
+}
+
+
+/* =========================================================
+   CALCULATE
+   ========================================================= */
+
+function calculate() {
+
+  const id =
+    document.getElementById("kind").value;
+
+  const formula =
+    formulas.find(f => f.id === id);
+
+  if (!formula) return;
+
+
+  const values = {};
+
+  let invalid = false;
+
+
+  formula.inputs.forEach(input => {
+
+    const key = input[0];
+
+    const element =
+      document.getElementById(`input-${key}`);
+
+    const value =
+      Number(element.value);
+
+    if (!Number.isFinite(value)) {
+
+      invalid = true;
+
+      element.style.borderColor = "#dc2626";
+
+    } else {
+
+      element.style.borderColor = "";
+
+      values[key] = value;
+
+    }
+
+  });
+
+
+  if (invalid) {
+
+    document.getElementById("answer")
+      .innerHTML =
+      `<span class="error">Please enter valid values.</span>`;
+
+    document.getElementById("steps")
+      .innerHTML = "";
+
+    return;
+
+  }
+
+
+  try {
+
+    const result = formula.calc(values);
+
+
+    document.getElementById("answer")
+      .innerHTML =
+      `<span class="success">${escapeHTML(result.value)}</span>`;
+
+
+    document.getElementById("formulaResult")
+      .textContent =
+      formula.formula;
+
+
+    document.getElementById("steps")
+      .innerHTML = "";
+
+
+    result.steps.forEach((step,index) => {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "step";
+
+      div.innerHTML = `
+
+        <span>
+          ${String(index+1).padStart(2,"0")}
+        </span>
+
+        <div>
+          ${escapeHTML(step)}
+        </div>
+
+      `;
+
+      document.getElementById("steps")
+        .appendChild(div);
+
+    });
+
+  } catch(error) {
+
+    document.getElementById("answer")
+      .innerHTML =
+      `<span class="error">
+        Unable to calculate. Check your inputs.
+      </span>`;
+
+    document.getElementById("steps")
+      .innerHTML = "";
+
+  }
+
+}
+
+
+/* =========================================================
+   KEYBOARD SUPPORT
+   ========================================================= */
+
+document.addEventListener("keydown",function(event){
+
+  if (
+    event.key === "Enter" &&
+    document.activeElement.tagName === "INPUT"
+  ) {
+
+    calculate();
+
+  }
+
+});
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+populateFormulas();
+
+loadFormula();
+
+</script>
+
+
+<script>
+function filterDynamicChips() {
+    const query = document.getElementById('formulaSearch').value.toLowerCase().trim();
+    const block = document.getElementById('dynamicTopicsBlock');
+    if (!block) return;
+    const buttons = block.querySelectorAll('button.mini-btn');
+    buttons.forEach(btn => {
+        if (btn.innerText.toLowerCase().includes(query)) {
+            btn.style.display = 'inline-block';
+        } else {
+            btn.style.display = 'none';
+        }
+    });
+}
+// Attach to the search input
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('formulaSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', filterDynamicChips);
+    }
+});
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,2631 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>Mathematics Formula Library — EngiConvert</title>
+
+  <link rel="stylesheet" href="/theme.css">
+  <script src="/theme.js" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .formula-page {
+      padding-bottom: 100px;
+    }
+
+    .hero-box {
+      padding: 30px;
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 20px;
+      background: var(--card, #fff);
+      margin-bottom: 28px;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 12px;
+      background: var(--bg, #fff);
+      color: inherit;
+      outline: none;
+      transition: .2s;
+    }
+
+    .search-box:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
+    }
+
+    .category-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .category-btn {
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid var(--border, #e5e7eb);
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      transition: .2s;
+    }
+
+    .category-btn:hover,
+    .category-btn.active {
+      background: #6366f1;
+      color: white;
+      border-color: #6366f1;
+    }
+
+    .formula-section {
+      margin-top: 38px;
+      scroll-margin-top: 90px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-number {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: #6366f1;
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .formula-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .formula-card {
+      border: 1px solid var(--border, #e5e7eb);
+      background: var(--card, #fff);
+      border-radius: 16px;
+      padding: 18px;
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+
+    .formula-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0,0,0,.08);
+      border-color: #a5b4fc;
+    }
+
+    .formula-card h3 {
+      font-size: 15px;
+      font-weight: 750;
+      margin: 8px 0 10px;
+    }
+
+    .formula {
+      padding: 13px;
+      border-radius: 10px;
+      background: rgba(99,102,241,.08);
+      border: 1px solid rgba(99,102,241,.15);
+      font-family: "Cambria Math", "Times New Roman", serif;
+      font-size: 17px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .formula-desc {
+      margin-top: 10px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .tag {
+      display: inline-flex;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(99,102,241,.10);
+      color: #6366f1;
+    }
+
+    .example-box {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-left: 3px solid #6366f1;
+      background: rgba(99,102,241,.05);
+      border-radius: 0 8px 8px 0;
+      font-size: 12px;
+    }
+
+    .definition-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .definition {
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 12px;
+      padding: 14px;
+      background: var(--card, #fff);
+    }
+
+    .definition strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 14px;
+    }
+
+    .formula-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+      background: var(--card, #fff);
+    }
+
+    .formula-table th,
+    .formula-table td {
+      padding: 11px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border, #e5e7eb);
+      font-size: 13px;
+    }
+
+    .formula-table th {
+      font-weight: 750;
+      background: rgba(99,102,241,.06);
+    }
+
+    .formula-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .no-results {
+      display: none;
+      padding: 30px;
+      text-align: center;
+      border: 1px dashed var(--border, #e5e7eb);
+      border-radius: 14px;
+      margin-top: 25px;
+    }
+
+    @media(max-width: 1000px) {
+      .formula-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media(max-width: 640px) {
+      .formula-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-box {
+        padding: 20px;
+      }
+
+      .formula {
+        font-size: 15px;
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="wrap nav">
+
+      <a class="logo" href="/">
+        <span class="logo-mark">Σ</span>
+        EngiConvert
+      </a>
+
+                  <nav class="navlinks">
+        <a href="/universal-solver" style="color:var(--color-primary); font-weight:bold;">AI Solver ✨</a>
+        <a href="/academic-hub" style="color:#10b981; font-weight:bold;">Academic Hub 📚</a>
+        <a href="/number-system">Numbers</a>
+        <a href="/unit-converter">Units</a>
+        <a href="/computer-science">CS</a>
+        <a href="/physics">Physics</a>
+        <a href="/formulas">Formulas</a>
+      </nav>
+
+      <div class="spacer"></div>
+
+      <a class="btn ghost" href="/">
+        ← Home
+      </a>
+
+    </div>
+  </header>
+
+
+  <main class="page formula-page">
+
+    <div class="wrap">
+
+      <!-- HERO -->
+      <section class="page-head hero-box">
+
+        <span class="muted mono">FORMULA LIBRARY</span>
+
+        <h1 style="margin-top:8px;">
+          Engineering Mathematics
+        </h1>
+
+        <p class="muted" style="max-width:750px;margin-top:8px;">
+          Complete collection of number-system concepts, divisibility rules,
+          unit-digit tricks, algebra, logarithms, sequences, geometry,
+          trigonometry, matrices, probability and essential engineering
+          mathematics formulas.
+        </p>
+
+        <div style="margin-top:20px;">
+          <div style="display:flex; gap:0.5rem; width:100%; max-width:800px; margin:0 auto;">
+              <input id="formulaSearch" class="search-box" type="search" placeholder="Search formulas, e.g. divisibility..." style="flex:1; margin:0;" onkeydown="handleAISearch(event, 'Engineering Mathematics')">
+              <button class="btn" onclick="triggerAISearch('Engineering Mathematics')" id="aiSearchBtn" style="background:var(--color-primary); color:white; padding: 0 1.5rem; border-radius:12px; flex-shrink:0;">✨ AI Search</button>
+            </div>
+
+        </div>
+
+        <div class="category-nav">
+
+          <button class="category-btn active" data-target="all">
+            All
+          </button>
+
+          <button class="category-btn" data-target="number-system">
+            Number System
+          </button>
+
+          <button class="category-btn" data-target="divisibility">
+            Divisibility
+          </button>
+
+          <button class="category-btn" data-target="unit-digit">
+            Unit Digit
+          </button>
+
+          <button class="category-btn" data-target="algebra">
+            Algebra
+          </button>
+
+          <button class="category-btn" data-target="logarithm">
+            Logarithms
+          </button>
+
+          <button class="category-btn" data-target="sequence">
+            Sequences
+          </button>
+
+          <button class="category-btn" data-target="geometry">
+            Geometry
+          </button>
+
+          <button class="category-btn" data-target="trigonometry">
+            Trigonometry
+          </button>
+
+          <button class="category-btn" data-target="calculus">
+            Calculus
+          </button>
+
+          <button class="category-btn" data-target="matrices">
+            Matrices
+          </button>
+
+          <button class="category-btn" data-target="probability">
+            Probability
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <div id="formulaContainer">
+
+
+        <!-- =====================================================
+             NUMBER SYSTEM
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          id="number-system"
+          data-category="number-system"
+        >
+
+          <div class="section-title">
+            <span class="section-number">01</span>
+            <h2>Number System — Basic Concepts</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Natural Numbers</span>
+              <h3>Natural Numbers</h3>
+
+              <div class="formula">
+                N = {1, 2, 3, 4, ...}
+              </div>
+
+              <p class="formula-desc">
+                Positive counting numbers. In many school/competitive
+                mathematics conventions, 0 is not included.
+              </p>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Whole Numbers</span>
+              <h3>Whole Numbers</h3>
+
+              <div class="formula">
+                W = {0, 1, 2, 3, ...}
+              </div>
+
+              <p class="formula-desc">
+                Natural numbers together with zero.
+              </p>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Integers</span>
+              <h3>Integers</h3>
+
+              <div class="formula">
+                Z = {..., −3, −2, −1, 0, 1, 2, 3, ...}
+              </div>
+
+              <p class="formula-desc">
+                Positive integers, negative integers and zero.
+              </p>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Rational</span>
+              <h3>Rational Numbers</h3>
+
+              <div class="formula">
+                x = p/q, q ≠ 0
+              </div>
+
+              <p class="formula-desc">
+                Numbers expressible as the ratio of two integers.
+              </p>
+
+              <div class="example-box">
+                Examples: 1/2, 3/4, −5/7, 2.5
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Irrational</span>
+              <h3>Irrational Numbers</h3>
+
+              <div class="formula">
+                x ≠ p/q
+              </div>
+
+              <p class="formula-desc">
+                Cannot be expressed as a ratio of two integers.
+                Their decimal expansion is non-terminating and non-repeating.
+              </p>
+
+              <div class="example-box">
+                Examples: √2, √3, π
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Real</span>
+              <h3>Real Numbers</h3>
+
+              <div class="formula">
+                R = Q ∪ Irrational
+              </div>
+
+              <p class="formula-desc">
+                Includes both rational and irrational numbers.
+              </p>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Prime</span>
+              <h3>Prime Number</h3>
+
+              <div class="formula">
+                Exactly 2 positive factors
+              </div>
+
+              <p class="formula-desc">
+                A natural number greater than 1 divisible only by 1 and itself.
+              </p>
+
+              <div class="example-box">
+                2, 3, 5, 7, 11, 13...
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Composite</span>
+              <h3>Composite Number</h3>
+
+              <div class="formula">
+                Factors &gt; 2
+              </div>
+
+              <p class="formula-desc">
+                A positive integer greater than 1 having more than two factors.
+              </p>
+
+              <div class="example-box">
+                4, 6, 8, 9, 10...
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Co-Prime</span>
+              <h3>Co-Prime Numbers</h3>
+
+              <div class="formula">
+                HCF(a,b) = 1
+              </div>
+
+              <p class="formula-desc">
+                Two numbers having no common factor other than 1.
+              </p>
+
+              <div class="example-box">
+                Example: 8 and 15
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Twin Prime</span>
+              <h3>Twin Prime Numbers</h3>
+
+              <div class="formula">
+                |p − q| = 2
+              </div>
+
+              <p class="formula-desc">
+                A pair of prime numbers differing by exactly 2.
+              </p>
+
+              <div class="example-box">
+                (3,5), (5,7), (11,13), (17,19)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Even</span>
+              <h3>Even Number</h3>
+
+              <div class="formula">
+                n = 2k
+              </div>
+
+              <p class="formula-desc">
+                Every integer divisible by 2.
+              </p>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Odd</span>
+              <h3>Odd Number</h3>
+
+              <div class="formula">
+                n = 2k + 1
+              </div>
+
+              <p class="formula-desc">
+                Every integer that leaves remainder 1 when divided by 2.
+              </p>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PLACE VALUE
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          data-category="number-system"
+        >
+
+          <div class="section-title">
+            <span class="section-number">02</span>
+            <h2>Face Value & Place Value</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Face Value</span>
+
+              <h3>Face Value</h3>
+
+              <div class="formula">
+                Face Value = Digit itself
+              </div>
+
+              <p class="formula-desc">
+                The face value of a digit does not depend on its position.
+              </p>
+
+              <div class="example-box">
+                In 581276, face value of 8 = 8.
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Place Value</span>
+
+              <h3>Place Value</h3>
+
+              <div class="formula">
+                Place Value = Digit × Base<sup>position</sup>
+              </div>
+
+              <p class="formula-desc">
+                The value of a digit depends on its position in the number.
+              </p>
+
+              <div class="example-box">
+                In 581276, place value of 8 = 8 × 10,000 = 80,000.
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Unit Digit</span>
+
+              <h3>Unit Digit</h3>
+
+              <div class="formula">
+                Unit Digit = N mod 10
+              </div>
+
+              <p class="formula-desc">
+                The unit digit is the last digit of an integer.
+              </p>
+
+              <div class="example-box">
+                Unit digit of 20197 = 7.
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DIVISIBILITY
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          id="divisibility"
+          data-category="divisibility"
+        >
+
+          <div class="section-title">
+            <span class="section-number">03</span>
+            <h2>Divisibility Rules</h2>
+          </div>
+
+
+          <div class="table-wrap">
+
+            <table class="formula-table">
+
+              <thead>
+                <tr>
+                  <th>Number</th>
+                  <th>Divisibility Rule</th>
+                  <th>Example</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                <tr>
+                  <td>1</td>
+                  <td>Every integer is divisible by 1.</td>
+                  <td>125 ÷ 1</td>
+                </tr>
+
+                <tr>
+                  <td>2</td>
+                  <td>Last digit must be even: 0, 2, 4, 6, 8.</td>
+                  <td>248</td>
+                </tr>
+
+                <tr>
+                  <td>3</td>
+                  <td>Sum of digits must be divisible by 3.</td>
+                  <td>297 → 2+9+7 = 18</td>
+                </tr>
+
+                <tr>
+                  <td>4</td>
+                  <td>Last two digits must be divisible by 4.</td>
+                  <td>2512 → 12 ÷ 4</td>
+                </tr>
+
+                <tr>
+                  <td>5</td>
+                  <td>Last digit must be 0 or 5.</td>
+                  <td>2555</td>
+                </tr>
+
+                <tr>
+                  <td>6</td>
+                  <td>Number must be divisible by both 2 and 3.</td>
+                  <td>42</td>
+                </tr>
+
+                <tr>
+                  <td>7</td>
+                  <td>Subtract twice the last digit from the remaining number.</td>
+                  <td>672 → 67 − 4 = 63</td>
+                </tr>
+
+                <tr>
+                  <td>8</td>
+                  <td>Last three digits must be divisible by 8.</td>
+                  <td>5584 → 584 ÷ 8</td>
+                </tr>
+
+                <tr>
+                  <td>9</td>
+                  <td>Sum of digits must be divisible by 9.</td>
+                  <td>30555 → 18</td>
+                </tr>
+
+                <tr>
+                  <td>10</td>
+                  <td>Last digit must be 0.</td>
+                  <td>500</td>
+                </tr>
+
+                <tr>
+                  <td>11</td>
+                  <td>Difference between alternating digit sums must be 0 or a multiple of 11.</td>
+                  <td>217382 → (2+7+8) − (1+3+2) = 11</td>
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             UNIT DIGIT
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          id="unit-digit"
+          data-category="unit-digit"
+        >
+
+          <div class="section-title">
+            <span class="section-number">04</span>
+            <h2>Unit Digit & Cyclicity</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Cyclicity</span>
+
+              <h3>Unit Digit Cycles</h3>
+
+              <div class="formula">
+                2 → 2,4,8,6
+              </div>
+
+              <p class="formula-desc">
+                Unit digits of powers repeat in cycles.
+              </p>
+
+              <div class="example-box">
+                2¹, 2², 2³, 2⁴ → 2,4,8,6 → cycle length 4.
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Cycles</span>
+
+              <h3>Common Cyclicities</h3>
+
+              <div class="formula">
+                2:4 &nbsp; 3:4 &nbsp; 4:2 &nbsp; 7:4 &nbsp; 8:4 &nbsp; 9:2
+              </div>
+
+              <p class="formula-desc">
+                Use the exponent modulo the cycle length.
+              </p>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Special</span>
+
+              <h3>Fixed Unit Digits</h3>
+
+              <div class="formula">
+                0, 1, 5, 6 → same unit digit
+              </div>
+
+              <p class="formula-desc">
+                Any positive power of 0, 1, 5 or 6 retains the same unit digit.
+              </p>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Power of 4</span>
+
+              <h3>Unit Digit of 4ⁿ</h3>
+
+              <div class="formula">
+                n even → 6 &nbsp; | &nbsp; n odd → 4
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Power of 9</span>
+
+              <h3>Unit Digit of 9ⁿ</h3>
+
+              <div class="formula">
+                n even → 1 &nbsp; | &nbsp; n odd → 9
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Product</span>
+
+              <h3>Unit Digit of Product</h3>
+
+              <div class="formula">
+                Unit(ab) = Unit(Unit(a) × Unit(b))
+              </div>
+
+              <p class="formula-desc">
+                Only the last digits are required when finding the final digit
+                of a product.
+              </p>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             IMPORTANT NUMBER FORMULAS
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          data-category="number-system"
+        >
+
+          <div class="section-title">
+            <span class="section-number">05</span>
+            <h2>Important Number Formulas</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Natural Numbers</span>
+
+              <h3>Sum of First n Natural Numbers</h3>
+
+              <div class="formula">
+                S = n(n + 1) / 2
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Squares</span>
+
+              <h3>Sum of Squares</h3>
+
+              <div class="formula">
+                Σk² = n(n + 1)(2n + 1) / 6
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Cubes</span>
+
+              <h3>Sum of Cubes</h3>
+
+              <div class="formula">
+                Σk³ = [n(n + 1)/2]²
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Even</span>
+
+              <h3>Sum of First n Even Numbers</h3>
+
+              <div class="formula">
+                2 + 4 + ... + 2n = n(n + 1)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Odd</span>
+
+              <h3>Sum of First n Odd Numbers</h3>
+
+              <div class="formula">
+                1 + 3 + ... + (2n−1) = n²
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">HCF & LCM</span>
+
+              <h3>HCF–LCM Relation</h3>
+
+              <div class="formula">
+                HCF(a,b) × LCM(a,b) = a × b
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ALGEBRA
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          id="algebra"
+          data-category="algebra"
+        >
+
+          <div class="section-title">
+            <span class="section-number">06</span>
+            <h2>Algebraic Identities & Equations</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Identity</span>
+              <h3>Square of Sum</h3>
+
+              <div class="formula">
+                (a+b)² = a² + 2ab + b²
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Identity</span>
+              <h3>Square of Difference</h3>
+
+              <div class="formula">
+                (a−b)² = a² − 2ab + b²
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Identity</span>
+              <h3>Difference of Squares</h3>
+
+              <div class="formula">
+                a² − b² = (a−b)(a+b)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Identity</span>
+              <h3>Cube of Sum</h3>
+
+              <div class="formula">
+                (a+b)³ = a³+3a²b+3ab²+b³
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Identity</span>
+              <h3>Cube of Difference</h3>
+
+              <div class="formula">
+                (a−b)³ = a³−3a²b+3ab²−b³
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Identity</span>
+              <h3>Sum of Cubes</h3>
+
+              <div class="formula">
+                a³+b³ = (a+b)(a²−ab+b²)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Identity</span>
+              <h3>Difference of Cubes</h3>
+
+              <div class="formula">
+                a³−b³ = (a−b)(a²+ab+b²)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Quadratic</span>
+              <h3>Quadratic Formula</h3>
+
+              <div class="formula">
+                x = [−b ± √(b²−4ac)] / 2a
+              </div>
+
+              <div class="example-box">
+                For ax² + bx + c = 0.
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Quadratic</span>
+              <h3>Discriminant</h3>
+
+              <div class="formula">
+                D = b² − 4ac
+              </div>
+
+              <p class="formula-desc">
+                D &gt; 0: two real roots. D = 0: equal roots.
+                D &lt; 0: complex roots.
+              </p>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Roots</span>
+              <h3>Sum of Roots</h3>
+
+              <div class="formula">
+                α + β = −b/a
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Roots</span>
+              <h3>Product of Roots</h3>
+
+              <div class="formula">
+                αβ = c/a
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Exponents</span>
+              <h3>Basic Laws of Indices</h3>
+
+              <div class="formula">
+                aᵐaⁿ = aᵐ⁺ⁿ
+              </div>
+
+              <div class="example-box">
+                aᵐ/aⁿ = aᵐ⁻ⁿ
+                <br>
+                (aᵐ)ⁿ = aᵐⁿ
+                <br>
+                a⁰ = 1
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             LOGARITHMS
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          id="logarithm"
+          data-category="logarithm"
+        >
+
+          <div class="section-title">
+            <span class="section-number">07</span>
+            <h2>Logarithms</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Definition</span>
+
+              <h3>Definition of Logarithm</h3>
+
+              <div class="formula">
+                logₐx = y ⇔ aʸ = x
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Product</span>
+
+              <h3>Product Rule</h3>
+
+              <div class="formula">
+                logₐ(xy) = logₐx + logₐy
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Quotient</span>
+
+              <h3>Quotient Rule</h3>
+
+              <div class="formula">
+                logₐ(x/y) = logₐx − logₐy
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Power</span>
+
+              <h3>Power Rule</h3>
+
+              <div class="formula">
+                logₐ(xⁿ) = n logₐx
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Change Base</span>
+
+              <h3>Change of Base</h3>
+
+              <div class="formula">
+                logₐb = logᶜb / logᶜa
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Special</span>
+
+              <h3>Important Values</h3>
+
+              <div class="formula">
+                logₐ1 = 0
+              </div>
+
+              <div class="example-box">
+                logₐa = 1
+                <br>
+                logₐ(aˣ) = x
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SEQUENCES & AP
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          id="sequence"
+          data-category="sequence"
+        >
+
+          <div class="section-title">
+            <span class="section-number">08</span>
+            <h2>Sequences & Progressions</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">AP</span>
+
+              <h3>Arithmetic Progression — nth Term</h3>
+
+              <div class="formula">
+                aₙ = a + (n−1)d
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">AP</span>
+
+              <h3>Sum of AP</h3>
+
+              <div class="formula">
+                Sₙ = n/2 [2a + (n−1)d]
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">AP</span>
+
+              <h3>AP Sum Using Last Term</h3>
+
+              <div class="formula">
+                Sₙ = n/2(a+l)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">GP</span>
+
+              <h3>Geometric Progression — nth Term</h3>
+
+              <div class="formula">
+                aₙ = arⁿ⁻¹
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">GP</span>
+
+              <h3>Sum of GP</h3>
+
+              <div class="formula">
+                Sₙ = a(rⁿ−1)/(r−1)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">GP</span>
+
+              <h3>Infinite GP</h3>
+
+              <div class="formula">
+                S∞ = a/(1−r), |r| &lt; 1
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             TRIGONOMETRY
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          id="trigonometry"
+          data-category="trigonometry"
+        >
+
+          <div class="section-title">
+            <span class="section-number">09</span>
+            <h2>Trigonometry</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Basic</span>
+
+              <h3>Primary Ratios</h3>
+
+              <div class="formula">
+                sinθ = P/H
+                <br>
+                cosθ = B/H
+                <br>
+                tanθ = P/B
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Identity</span>
+
+              <h3>Pythagorean Identity</h3>
+
+              <div class="formula">
+                sin²θ + cos²θ = 1
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Identity</span>
+
+              <h3>Tan Identity</h3>
+
+              <div class="formula">
+                1 + tan²θ = sec²θ
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Identity</span>
+
+              <h3>Cot Identity</h3>
+
+              <div class="formula">
+                1 + cot²θ = cosec²θ
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Addition</span>
+
+              <h3>Sin Addition</h3>
+
+              <div class="formula">
+                sin(A+B)=sinA cosB+cosA sinB
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Addition</span>
+
+              <h3>Cos Addition</h3>
+
+              <div class="formula">
+                cos(A+B)=cosA cosB−sinA sinB
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Double Angle</span>
+
+              <h3>Sin 2θ</h3>
+
+              <div class="formula">
+                sin2θ = 2sinθ cosθ
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Double Angle</span>
+
+              <h3>Cos 2θ</h3>
+
+              <div class="formula">
+                cos2θ = cos²θ − sin²θ
+              </div>
+
+              <div class="example-box">
+                Also: cos2θ = 2cos²θ−1 = 1−2sin²θ
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Triangle</span>
+
+              <h3>Law of Sines</h3>
+
+              <div class="formula">
+                a/sinA = b/sinB = c/sinC
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Triangle</span>
+
+              <h3>Law of Cosines</h3>
+
+              <div class="formula">
+                c² = a²+b²−2ab cosC
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GEOMETRY
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          id="geometry"
+          data-category="geometry"
+        >
+
+          <div class="section-title">
+            <span class="section-number">10</span>
+            <h2>Geometry & Mensuration</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Triangle</span>
+
+              <h3>Area of Triangle</h3>
+
+              <div class="formula">
+                A = 1/2 × base × height
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Triangle</span>
+
+              <h3>Heron's Formula</h3>
+
+              <div class="formula">
+                A = √[s(s−a)(s−b)(s−c)]
+              </div>
+
+              <div class="example-box">
+                s = (a+b+c)/2
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Circle</span>
+
+              <h3>Area of Circle</h3>
+
+              <div class="formula">
+                A = πr²
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Circle</span>
+
+              <h3>Circumference</h3>
+
+              <div class="formula">
+                C = 2πr
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Rectangle</span>
+
+              <h3>Area of Rectangle</h3>
+
+              <div class="formula">
+                A = l × b
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Rectangle</span>
+
+              <h3>Diagonal</h3>
+
+              <div class="formula">
+                d = √(l²+b²)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Square</span>
+
+              <h3>Area of Square</h3>
+
+              <div class="formula">
+                A = a²
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Cylinder</span>
+
+              <h3>Volume of Cylinder</h3>
+
+              <div class="formula">
+                V = πr²h
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Sphere</span>
+
+              <h3>Volume of Sphere</h3>
+
+              <div class="formula">
+                V = 4πr³/3
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Sphere</span>
+
+              <h3>Surface Area of Sphere</h3>
+
+              <div class="formula">
+                A = 4πr²
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Cone</span>
+
+              <h3>Volume of Cone</h3>
+
+              <div class="formula">
+                V = 1/3 πr²h
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Cuboid</span>
+
+              <h3>Volume of Cuboid</h3>
+
+              <div class="formula">
+                V = lbh
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COORDINATE GEOMETRY
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          data-category="geometry"
+        >
+
+          <div class="section-title">
+            <span class="section-number">11</span>
+            <h2>Coordinate Geometry</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Distance</span>
+
+              <h3>Distance Between Two Points</h3>
+
+              <div class="formula">
+                d = √[(x₂−x₁)²+(y₂−y₁)²]
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Midpoint</span>
+
+              <h3>Midpoint Formula</h3>
+
+              <div class="formula">
+                M = ((x₁+x₂)/2, (y₁+y₂)/2)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Slope</span>
+
+              <h3>Slope of Line</h3>
+
+              <div class="formula">
+                m = (y₂−y₁)/(x₂−x₁)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Line</span>
+
+              <h3>Point-Slope Form</h3>
+
+              <div class="formula">
+                y−y₁ = m(x−x₁)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Line</span>
+
+              <h3>Slope-Intercept Form</h3>
+
+              <div class="formula">
+                y = mx+c
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Circle</span>
+
+              <h3>Equation of Circle</h3>
+
+              <div class="formula">
+                (x−h)²+(y−k)² = r²
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             MATRICES
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          id="matrices"
+          data-category="matrices"
+        >
+
+          <div class="section-title">
+            <span class="section-number">12</span>
+            <h2>Matrices & Determinants</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">2×2</span>
+
+              <h3>2×2 Determinant</h3>
+
+              <div class="formula">
+                |a b; c d| = ad − bc
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Inverse</span>
+
+              <h3>Inverse of 2×2 Matrix</h3>
+
+              <div class="formula">
+                A⁻¹ = 1/(ad−bc) [d −b; −c a]
+              </div>
+
+              <p class="formula-desc">
+                Valid when det(A) ≠ 0.
+              </p>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Determinant</span>
+
+              <h3>3×3 Determinant</h3>
+
+              <div class="formula">
+                a(ei−fh) − b(di−fg) + c(dh−eg)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Matrix</span>
+
+              <h3>Matrix Multiplication</h3>
+
+              <div class="formula">
+                (AB)ᵢⱼ = Σ AᵢₖBₖⱼ
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Trace</span>
+
+              <h3>Trace of Matrix</h3>
+
+              <div class="formula">
+                tr(A) = Σaᵢᵢ
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Rank</span>
+
+              <h3>Rank</h3>
+
+              <div class="formula">
+                Rank(A) = Number of independent rows/columns
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             CALCULUS
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          id="calculus"
+          data-category="calculus"
+        >
+
+          <div class="section-title">
+            <span class="section-number">13</span>
+            <h2>Differentiation</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Power Rule</span>
+
+              <h3>Derivative of xⁿ</h3>
+
+              <div class="formula">
+                d(xⁿ)/dx = nxⁿ⁻¹
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Exponential</span>
+
+              <h3>Derivative of eˣ</h3>
+
+              <div class="formula">
+                d(eˣ)/dx = eˣ
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Log</span>
+
+              <h3>Derivative of ln x</h3>
+
+              <div class="formula">
+                d(lnx)/dx = 1/x
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Trigonometry</span>
+
+              <h3>Derivative of sin x</h3>
+
+              <div class="formula">
+                d(sinx)/dx = cosx
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Trigonometry</span>
+
+              <h3>Derivative of cos x</h3>
+
+              <div class="formula">
+                d(cosx)/dx = −sinx
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Product Rule</span>
+
+              <h3>Product Rule</h3>
+
+              <div class="formula">
+                (uv)' = uv' + vu'
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Quotient</span>
+
+              <h3>Quotient Rule</h3>
+
+              <div class="formula">
+                (u/v)' = (vu'−uv')/v²
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Chain Rule</span>
+
+              <h3>Chain Rule</h3>
+
+              <div class="formula">
+                dy/dx = (dy/du)(du/dx)
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             INTEGRATION
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          data-category="calculus"
+        >
+
+          <div class="section-title">
+            <span class="section-number">14</span>
+            <h2>Integration</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Power</span>
+
+              <h3>Power Rule</h3>
+
+              <div class="formula">
+                ∫xⁿdx = xⁿ⁺¹/(n+1)+C
+              </div>
+
+              <p class="formula-desc">
+                n ≠ −1.
+              </p>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Log</span>
+
+              <h3>Integral of 1/x</h3>
+
+              <div class="formula">
+                ∫dx/x = ln|x| + C
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Exponential</span>
+
+              <h3>Integral of eˣ</h3>
+
+              <div class="formula">
+                ∫eˣdx = eˣ + C
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Trigonometry</span>
+
+              <h3>Integral of sin x</h3>
+
+              <div class="formula">
+                ∫sinx dx = −cosx+C
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Trigonometry</span>
+
+              <h3>Integral of cos x</h3>
+
+              <div class="formula">
+                ∫cosx dx = sinx+C
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">By Parts</span>
+
+              <h3>Integration by Parts</h3>
+
+              <div class="formula">
+                ∫u dv = uv − ∫v du
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PROBABILITY
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          id="probability"
+          data-category="probability"
+        >
+
+          <div class="section-title">
+            <span class="section-number">15</span>
+            <h2>Permutation, Combination & Probability</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Factorial</span>
+
+              <h3>Factorial</h3>
+
+              <div class="formula">
+                n! = n(n−1)(n−2)...1
+              </div>
+
+              <div class="example-box">
+                0! = 1
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Permutation</span>
+
+              <h3>Permutation</h3>
+
+              <div class="formula">
+                ⁿPᵣ = n!/(n−r)!
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Combination</span>
+
+              <h3>Combination</h3>
+
+              <div class="formula">
+                ⁿCᵣ = n!/[r!(n−r)!]
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Probability</span>
+
+              <h3>Basic Probability</h3>
+
+              <div class="formula">
+                P(E) = Favorable outcomes / Total outcomes
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Complement</span>
+
+              <h3>Complement Rule</h3>
+
+              <div class="formula">
+                P(E') = 1 − P(E)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Addition</span>
+
+              <h3>Addition Rule</h3>
+
+              <div class="formula">
+                P(A∪B)=P(A)+P(B)−P(A∩B)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Independent</span>
+
+              <h3>Independent Events</h3>
+
+              <div class="formula">
+                P(A∩B)=P(A)P(B)
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Conditional</span>
+
+              <h3>Conditional Probability</h3>
+
+              <div class="formula">
+                P(A|B)=P(A∩B)/P(B)
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             STATISTICS
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          data-category="number-system"
+        >
+
+          <div class="section-title">
+            <span class="section-number">16</span>
+            <h2>Statistics</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Mean</span>
+
+              <h3>Arithmetic Mean</h3>
+
+              <div class="formula">
+                x̄ = Σx / n
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Weighted</span>
+
+              <h3>Weighted Mean</h3>
+
+              <div class="formula">
+                x̄ = Σwx / Σw
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Range</span>
+
+              <h3>Range</h3>
+
+              <div class="formula">
+                Range = Maximum − Minimum
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Variance</span>
+
+              <h3>Population Variance</h3>
+
+              <div class="formula">
+                σ² = Σ(x−μ)² / N
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Standard Deviation</span>
+
+              <h3>Standard Deviation</h3>
+
+              <div class="formula">
+                σ = √σ²
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Coefficient</span>
+
+              <h3>Coefficient of Variation</h3>
+
+              <div class="formula">
+                CV = (σ/μ) × 100
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ENGINEERING / APTITUDE
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          data-category="number-system"
+        >
+
+          <div class="section-title">
+            <span class="section-number">17</span>
+            <h2>Engineering & Aptitude Essentials</h2>
+          </div>
+
+
+          <div class="formula-grid">
+
+            <article class="formula-card">
+              <span class="tag">Percentage</span>
+
+              <h3>Percentage</h3>
+
+              <div class="formula">
+                Percentage = (Part/Whole) × 100
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Profit</span>
+
+              <h3>Profit Percentage</h3>
+
+              <div class="formula">
+                Profit% = (Profit/CP) × 100
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Loss</span>
+
+              <h3>Loss Percentage</h3>
+
+              <div class="formula">
+                Loss% = (Loss/CP) × 100
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Simple Interest</span>
+
+              <h3>Simple Interest</h3>
+
+              <div class="formula">
+                SI = PRT/100
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Compound Interest</span>
+
+              <h3>Compound Amount</h3>
+
+              <div class="formula">
+                A = P(1+r/100)ⁿ
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Speed</span>
+
+              <h3>Speed</h3>
+
+              <div class="formula">
+                Speed = Distance / Time
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Distance</span>
+
+              <h3>Distance</h3>
+
+              <div class="formula">
+                Distance = Speed × Time
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Average Speed</span>
+
+              <h3>Average Speed</h3>
+
+              <div class="formula">
+                Total Distance / Total Time
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Work</span>
+
+              <h3>Work Formula</h3>
+
+              <div class="formula">
+                Work = Rate × Time
+              </div>
+            </article>
+
+
+            <article class="formula-card">
+              <span class="tag">Ratio</span>
+
+              <h3>Ratio</h3>
+
+              <div class="formula">
+                a:b = a/b
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             QUICK REFERENCE
+        ====================================================== -->
+
+        <section
+          class="formula-section"
+          data-category="number-system"
+        >
+
+          <div class="section-title">
+            <span class="section-number">18</span>
+            <h2>Quick Reference — Number Properties</h2>
+          </div>
+
+
+          <div class="definition-list">
+
+            <div class="definition">
+              <strong>Every prime number greater than 2 is odd.</strong>
+              <span class="muted">
+                2 is the only even prime number.
+              </span>
+            </div>
+
+            <div class="definition">
+              <strong>1 is neither prime nor composite.</strong>
+              <span class="muted">
+                It has exactly one positive factor.
+              </span>
+            </div>
+
+            <div class="definition">
+              <strong>Every integer is rational.</strong>
+              <span class="muted">
+                Any integer n can be written as n/1.
+              </span>
+            </div>
+
+            <div class="definition">
+              <strong>Every rational and irrational number is real.</strong>
+              <span class="muted">
+                Real numbers consist of both groups.
+              </span>
+            </div>
+
+            <div class="definition">
+              <strong>Terminating decimals are rational.</strong>
+              <span class="muted">
+                Example: 0.25 = 1/4.
+              </span>
+            </div>
+
+            <div class="definition">
+              <strong>Repeating decimals are rational.</strong>
+              <span class="muted">
+                Example: 0.333... = 1/3.
+              </span>
+            </div>
+
+            <div class="definition">
+              <strong>Irrational decimals are non-terminating and non-repeating.</strong>
+              <span class="muted">
+                Example: √2 and π.
+              </span>
+            </div>
+
+          </div>
+
+        </section>
+
+
+      </div>
+
+
+      <div id="noResults" class="no-results">
+        <strong>No formula found.</strong>
+        <p class="muted">
+          Try searching for "quadratic", "AP", "log", "divisibility",
+          "matrix", "sin", or "probability".
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- FOOTER -->
+
+  <footer class="footer" style="background: var(--card); border-top: 1px solid var(--border); padding: 3rem 0; margin-top: 4rem;">
+    <div class="wrap" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: left;">
+      <div>
+        <a class="logo" href="/" style="display:inline-flex; align-items:center; gap:0.5rem; font-size:1.5rem; font-weight:800; color:var(--text); text-decoration:none; margin-bottom: 1rem;">
+          <span class="logo-mark" style="background:var(--color-primary); color:#fff; padding:0.2rem 0.6rem; border-radius:0.5rem;">Σ</span>EngiConvert
+        </a>
+        <p class="muted" style="line-height: 1.6; font-size: 0.95rem;">
+          A comprehensive suite of engineering calculators, AI solvers, and academic resources designed for students and professionals. Built by Jatin Singh Bisht.
+        </p>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Quick Links</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="/universal-solver" class="muted" style="text-decoration: none; transition: color 0.2s;">✨ AI Solver</a></li>
+          <li><a href="/academic-hub" class="muted" style="text-decoration: none; transition: color 0.2s;">📚 Academic Hub</a></li>
+          <li><a href="/physics" class="muted" style="text-decoration: none; transition: color 0.2s;">⚛️ Physics Tools</a></li>
+          <li><a href="/maths" class="muted" style="text-decoration: none; transition: color 0.2s;">📐 Math Tools</a></li>
+          <li><a href="/formulas" class="muted" style="text-decoration: none; transition: color 0.2s;">🧪 Formula Library</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Connect with me</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="https://www.linkedin.com/in/jatin-singh-bisht-019648380" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">💼 LinkedIn</a></li>
+          <li><a href="https://github.com/Web-wanderer01" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">🐱 GitHub Profile</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap" style="text-align: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--color-muted); font-size: 0.9rem;">
+      &copy; 2026 EngiConvert. All rights reserved.
+    </div>
+  </footer>
+
+
+  <!-- MOBILE NAV -->
+
+  <nav class="bottom">
+
+    <a href="/">
+      <b>⌂</b>
+      Home
+    </a>
+
+    <a href="/number-system">
+      <b>Σ</b>
+      Numbers
+    </a>
+
+    <a href="/unit-converter">
+      <b>⇄</b>
+      Units
+    </a>
+
+    <a href="/computer-science">
+      <b>⊞</b>
+      CS
+    </a>
+
+    <a href="/physics">
+      <b>ϟ</b>
+      Physics
+    </a>
+
+    <a href="/formulas">
+      <b>≡</b>
+      Library
+    </a>
+
+  </nav>
+
+
+  <!-- SEARCH + FILTER -->
+
+  <script>
+
+    const searchInput =
+      document.getElementById("formulaSearch");
+
+    const cards =
+      document.querySelectorAll(".formula-card");
+
+    const sections =
+      document.querySelectorAll(".formula-section");
+
+    const noResults =
+      document.getElementById("noResults");
+
+    const categoryButtons =
+      document.querySelectorAll(".category-btn");
+
+
+    let currentCategory = "all";
+
+
+    function filterFormulas() {
+
+      const query =
+        searchInput.value.toLowerCase().trim();
+
+      let visibleCards = 0;
+
+
+      sections.forEach(section => {
+
+        const sectionCategory =
+          section.dataset.category || "";
+
+        const sectionMatchesCategory =
+          currentCategory === "all" ||
+          sectionCategory === currentCategory;
+
+
+        let sectionVisible = 0;
+
+
+        section.querySelectorAll(".formula-card").forEach(card => {
+
+          const text =
+            card.innerText.toLowerCase();
+
+          const matchesSearch =
+            !query || text.includes(query);
+
+          const visible =
+            sectionMatchesCategory && matchesSearch;
+
+          card.style.display =
+            visible ? "" : "none";
+
+          if (visible) {
+            sectionVisible++;
+            visibleCards++;
+          }
+
+        });
+
+
+        /*
+          Sections containing tables/definitions instead
+          of formula cards should remain visible when their
+          category matches and a search is empty.
+        */
+
+        const hasCards =
+          section.querySelectorAll(".formula-card").length > 0;
+
+
+        if (hasCards) {
+
+          section.style.display =
+            sectionVisible > 0 ? "" : "none";
+
+        } else {
+
+          const text =
+            section.innerText.toLowerCase();
+
+          const matchesSearch =
+            !query || text.includes(query);
+
+          section.style.display =
+            sectionMatchesCategory && matchesSearch
+              ? ""
+              : "none";
+
+          if (
+            sectionMatchesCategory &&
+            matchesSearch
+          ) {
+            visibleCards++;
+          }
+
+        }
+
+      });
+
+
+      noResults.style.display =
+        visibleCards === 0 ? "block" : "none";
+    }
+
+
+    searchInput.addEventListener(
+      "input",
+      filterFormulas
+    );
+
+
+    categoryButtons.forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        categoryButtons.forEach(btn =>
+          btn.classList.remove("active")
+        );
+
+        button.classList.add("active");
+
+        currentCategory =
+          button.dataset.target;
+
+        filterFormulas();
+
+      });
+
+    });
+
+
+  </script>
+
+
+
+<script>
+function filterDynamicChips() {
+    const query = document.getElementById('formulaSearch').value.toLowerCase().trim();
+    const block = document.getElementById('dynamicTopicsBlock');
+    if (!block) return;
+    const buttons = block.querySelectorAll('button.mini-btn');
+    buttons.forEach(btn => {
+        if (btn.innerText.toLowerCase().includes(query)) {
+            btn.style.display = 'inline-block';
+        } else {
+            btn.style.display = 'none';
+        }
+    });
+}
+// Attach to the search input
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('formulaSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', filterDynamicChips);
+    }
+});
+</script>
+
+</body>
+
+</html>
+

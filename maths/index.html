@@ -1,0 +1,2158 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>Mathematics Calculator — EngiConvert</title>
+
+  <link rel="stylesheet" href="/theme.css">
+  <script src="/theme.js" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .math-page {
+      padding-bottom: 100px;
+    }
+
+    .math-hero {
+      margin-bottom: 28px;
+    }
+
+    .math-search {
+      margin: 25px 0;
+      position: relative;
+    }
+
+    .math-search input {
+      width: 100%;
+      padding: 15px 18px 15px 48px;
+      border: 1px solid rgba(128, 128, 128, .25);
+      border-radius: 14px;
+      background: var(--card, #fff);
+      color: inherit;
+      outline: none;
+      font-size: 15px;
+    }
+
+    .math-search input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 14px;
+      opacity: .55;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .category-tab {
+      border: 1px solid rgba(128, 128, 128, .25);
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      transition: .2s;
+    }
+
+    .category-tab:hover,
+    .category-tab.active {
+      background: #111827;
+      color: white;
+      border-color: #111827;
+    }
+
+    .formula-section {
+      margin-bottom: 45px;
+      scroll-margin-top: 90px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 16px;
+    }
+
+    .section-title h2 {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .formula-count {
+      font-size: 12px;
+      opacity: .55;
+    }
+
+    .formula-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+    }
+
+    .formula-card {
+      padding: 20px;
+      border-radius: 17px;
+      border: 1px solid rgba(128, 128, 128, .18);
+      background: var(--card, #fff);
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+
+    .formula-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .08);
+      border-color: rgba(99, 102, 241, .35);
+    }
+
+    .formula-tag {
+      display: inline-block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: rgba(99, 102, 241, .10);
+      color: #6366f1;
+      margin-bottom: 10px;
+    }
+
+    .formula-card h3 {
+      font-size: 15px;
+      font-weight: 750;
+      margin-bottom: 12px;
+    }
+
+    .formula-expression {
+      padding: 13px;
+      border-radius: 10px;
+      background: rgba(127, 127, 127, .07);
+      font-family: "Times New Roman", serif;
+      font-size: 17px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    .formula-note {
+      font-size: 12px;
+      opacity: .6;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .empty-state {
+      display: none;
+      text-align: center;
+      padding: 45px 20px;
+      opacity: .65;
+    }
+
+    @media(max-width:640px) {
+      .formula-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title h2 {
+        font-size: 19px;
+      }
+
+      .formula-expression {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="wrap nav">
+
+      <a class="logo" href="/">
+        <span class="logo-mark">Σ</span>
+        EngiConvert
+      </a>
+
+                  <nav class="navlinks">
+        <a href="/universal-solver" style="color:var(--color-primary); font-weight:bold;">AI Solver ✨</a>
+        <a href="/academic-hub" style="color:#10b981; font-weight:bold;">Academic Hub 📚</a>
+        <a href="/number-system">Numbers</a>
+        <a href="/unit-converter">Units</a>
+        <a href="/computer-science">CS</a>
+        <a href="/physics">Physics</a>
+        <a href="/formulas">Formulas</a>
+      </nav>
+
+      <div class="spacer"></div>
+
+      <a class="btn ghost" href="/">
+        ← Home
+      </a>
+
+    </div>
+  </header>
+
+
+  <!-- MAIN -->
+  <main class="page math-page">
+
+    <div class="wrap">
+
+      <!-- HERO -->
+      <div class="page-head math-hero">
+
+        <span class="muted mono">
+          MATHEMATICS CALCULATOR
+        </span>
+
+        <h1>
+          Engineering Mathematics
+        </h1>
+
+        <p class="muted">
+          A complete mathematics formula reference for algebra,
+          trigonometry, coordinate geometry, calculus, statistics,
+          probability and engineering mathematics.
+        </p>
+
+      </div>
+
+
+      <!-- SEARCH -->
+      <div class="math-search">
+
+        <span class="search-icon">⌕</span>
+
+        <input
+          type="search"
+          id="formulaSearch"
+          placeholder="Search formulas... e.g. quadratic, slope, derivative, probability"
+          autocomplete="off"
+        >
+
+      </div>
+
+
+      <!-- CATEGORY FILTERS -->
+      <div class="category-tabs">
+
+        <button class="category-tab active" data-category="all">
+          All
+        </button>
+
+        <button class="category-tab" data-category="algebra">
+          Algebra
+        </button>
+
+        <button class="category-tab" data-category="quadratic">
+          Quadratics
+        </button>
+
+        <button class="category-tab" data-category="trigonometry">
+          Trigonometry
+        </button>
+
+        <button class="category-tab" data-category="geometry">
+          Geometry
+        </button>
+
+        <button class="category-tab" data-category="calculus">
+          Calculus
+        </button>
+
+        <button class="category-tab" data-category="statistics">
+          Statistics
+        </button>
+
+        <button class="category-tab" data-category="probability">
+          Probability
+        </button>
+
+        <button class="category-tab" data-category="engineering">
+          Engineering
+        </button>
+
+      </div>
+
+
+      <!-- =====================================================
+           ALGEBRA
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="algebra"
+      >
+
+        <div class="section-title">
+
+          <h2>Algebra</h2>
+
+          <span class="formula-count">
+            Core formulas
+          </span>
+
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="distributive property algebra">
+
+            <span class="formula-tag">Algebra</span>
+
+            <h3>Distributive Property</h3>
+
+            <div class="formula-expression">
+              a(b + c) = ab + ac
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="commutative addition">
+
+            <span class="formula-tag">Algebra</span>
+
+            <h3>Commutative Property of Addition</h3>
+
+            <div class="formula-expression">
+              a + b = b + a
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="commutative multiplication">
+
+            <span class="formula-tag">Algebra</span>
+
+            <h3>Commutative Property of Multiplication</h3>
+
+            <div class="formula-expression">
+              ab = ba
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="associative addition">
+
+            <span class="formula-tag">Algebra</span>
+
+            <h3>Associative Property</h3>
+
+            <div class="formula-expression">
+              a + (b + c) = (a + b) + c
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="additive identity">
+
+            <span class="formula-tag">Algebra</span>
+
+            <h3>Additive Identity</h3>
+
+            <div class="formula-expression">
+              a + 0 = a
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="multiplicative identity">
+
+            <span class="formula-tag">Algebra</span>
+
+            <h3>Multiplicative Identity</h3>
+
+            <div class="formula-expression">
+              a × 1 = a
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="additive inverse">
+
+            <span class="formula-tag">Algebra</span>
+
+            <h3>Additive Inverse</h3>
+
+            <div class="formula-expression">
+              a + (−a) = 0
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="multiplicative inverse">
+
+            <span class="formula-tag">Algebra</span>
+
+            <h3>Multiplicative Inverse</h3>
+
+            <div class="formula-expression">
+              a × 1/a = 1
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           QUADRATIC
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="quadratic"
+      >
+
+        <div class="section-title">
+          <h2>Quadratic Equations</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="quadratic equation standard form">
+
+            <span class="formula-tag">Quadratics</span>
+
+            <h3>Standard Form</h3>
+
+            <div class="formula-expression">
+              ax² + bx + c = 0
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="quadratic formula roots">
+
+            <span class="formula-tag">Quadratics</span>
+
+            <h3>Quadratic Formula</h3>
+
+            <div class="formula-expression">
+              x = (−b ± √(b² − 4ac)) / 2a
+            </div>
+
+            <p class="formula-note">
+              Used to find the roots of a quadratic equation.
+            </p>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="discriminant quadratic">
+
+            <span class="formula-tag">Quadratics</span>
+
+            <h3>Discriminant</h3>
+
+            <div class="formula-expression">
+              D = b² − 4ac
+            </div>
+
+            <p class="formula-note">
+              D &gt; 0: real unequal roots · D = 0: equal roots · D &lt; 0: no real roots
+            </p>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="sum roots quadratic">
+
+            <span class="formula-tag">Quadratics</span>
+
+            <h3>Sum of Roots</h3>
+
+            <div class="formula-expression">
+              α + β = −b/a
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="product roots quadratic">
+
+            <span class="formula-tag">Quadratics</span>
+
+            <h3>Product of Roots</h3>
+
+            <div class="formula-expression">
+              αβ = c/a
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="polynomial general form">
+
+            <span class="formula-tag">Algebra</span>
+
+            <h3>Polynomial General Form</h3>
+
+            <div class="formula-expression">
+              p(x) = aₙxⁿ + aₙ₋₁xⁿ⁻¹ + ... + a₁x + a₀
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           COORDINATE GEOMETRY
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="geometry"
+      >
+
+        <div class="section-title">
+          <h2>Coordinate Geometry & Straight Lines</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="distance formula coordinate geometry">
+
+            <span class="formula-tag">Geometry</span>
+
+            <h3>Distance Formula</h3>
+
+            <div class="formula-expression">
+              d = √[(x₂ − x₁)² + (y₂ − y₁)²]
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="slope gradient line">
+
+            <span class="formula-tag">Straight Lines</span>
+
+            <h3>Slope of a Line</h3>
+
+            <div class="formula-expression">
+              m = (y₂ − y₁)/(x₂ − x₁)
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="point slope equation">
+
+            <span class="formula-tag">Straight Lines</span>
+
+            <h3>Point-Slope Form</h3>
+
+            <div class="formula-expression">
+              y − y₁ = m(x − x₁)
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="slope intercept line">
+
+            <span class="formula-tag">Straight Lines</span>
+
+            <h3>Slope-Intercept Form</h3>
+
+            <div class="formula-expression">
+              y = mx + b
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="intercept intercept line">
+
+            <span class="formula-tag">Straight Lines</span>
+
+            <h3>Intercept Form</h3>
+
+            <div class="formula-expression">
+              x/a + y/b = 1
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="general equation straight line">
+
+            <span class="formula-tag">Straight Lines</span>
+
+            <h3>General Equation</h3>
+
+            <div class="formula-expression">
+              Ax + By + C = 0
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="parallel lines slope">
+
+            <span class="formula-tag">Straight Lines</span>
+
+            <h3>Parallel Lines</h3>
+
+            <div class="formula-expression">
+              m₁ = m₂
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="perpendicular lines slope">
+
+            <span class="formula-tag">Straight Lines</span>
+
+            <h3>Perpendicular Lines</h3>
+
+            <div class="formula-expression">
+              m₁m₂ = −1
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="point line distance">
+
+            <span class="formula-tag">Geometry</span>
+
+            <h3>Distance from Point to Line</h3>
+
+            <div class="formula-expression">
+              d = |Ax₀ + By₀ + C| / √(A² + B²)
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="parallel lines distance">
+
+            <span class="formula-tag">Geometry</span>
+
+            <h3>Distance Between Parallel Lines</h3>
+
+            <div class="formula-expression">
+              d = |C₁ − C₂| / √(A² + B²)
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="section formula internal division">
+
+            <span class="formula-tag">Coordinate</span>
+
+            <h3>Section Formula</h3>
+
+            <div class="formula-expression">
+              P = ((mx₂ + nx₁)/(m+n), (my₂ + ny₁)/(m+n))
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="midpoint formula">
+
+            <span class="formula-tag">Coordinate</span>
+
+            <h3>Midpoint Formula</h3>
+
+            <div class="formula-expression">
+              M = ((x₁+x₂)/2, (y₁+y₂)/2)
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="area triangle coordinate">
+
+            <span class="formula-tag">Coordinate</span>
+
+            <h3>Area of Triangle</h3>
+
+            <div class="formula-expression">
+              A = ½|x₁(y₂−y₃)+x₂(y₃−y₁)+x₃(y₁−y₂)|
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="collinearity coordinate">
+
+            <span class="formula-tag">Coordinate</span>
+
+            <h3>Collinearity Condition</h3>
+
+            <div class="formula-expression">
+              Area = 0
+            </div>
+
+            <p class="formula-note">
+              If the area formed by three points is zero, the points are collinear.
+            </p>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           TRIGONOMETRY
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="trigonometry"
+      >
+
+        <div class="section-title">
+          <h2>Trigonometry</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="sine trigonometric ratio">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Sine</h3>
+
+            <div class="formula-expression">
+              sin θ = Perpendicular / Hypotenuse
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="cosine trigonometric ratio">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Cosine</h3>
+
+            <div class="formula-expression">
+              cos θ = Base / Hypotenuse
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="tangent trigonometric ratio">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Tangent</h3>
+
+            <div class="formula-expression">
+              tan θ = Perpendicular / Base
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="cosecant secant cotangent">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Reciprocal Ratios</h3>
+
+            <div class="formula-expression">
+              cosec θ = 1/sin θ<br>
+              sec θ = 1/cos θ<br>
+              cot θ = 1/tan θ
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="quotient trigonometric identities">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Quotient Identities</h3>
+
+            <div class="formula-expression">
+              tan θ = sin θ/cos θ<br>
+              cot θ = cos θ/sin θ
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="pythagorean trigonometric identity">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Pythagorean Identities</h3>
+
+            <div class="formula-expression">
+              sin²θ + cos²θ = 1<br>
+              1 + tan²θ = sec²θ<br>
+              1 + cot²θ = cosec²θ
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="sine addition formula">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Sine Addition</h3>
+
+            <div class="formula-expression">
+              sin(x+y) = sin x cos y + cos x sin y
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="cosine addition formula">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Cosine Addition</h3>
+
+            <div class="formula-expression">
+              cos(x+y) = cos x cos y − sin x sin y
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="sine subtraction">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Sine Subtraction</h3>
+
+            <div class="formula-expression">
+              sin(x−y) = sin x cos y − cos x sin y
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="cosine subtraction">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Cosine Subtraction</h3>
+
+            <div class="formula-expression">
+              cos(x−y) = cos x cos y + sin x sin y
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="double angle sine">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Double Angle — Sine</h3>
+
+            <div class="formula-expression">
+              sin 2x = 2 sin x cos x
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="double angle cosine">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Double Angle — Cosine</h3>
+
+            <div class="formula-expression">
+              cos 2x = cos²x − sin²x
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="tan double angle">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Double Angle — Tangent</h3>
+
+            <div class="formula-expression">
+              tan 2x = 2tan x/(1−tan²x)
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="product to sum sine cosine">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Product-to-Sum</h3>
+
+            <div class="formula-expression">
+              sin x sin y = ½[cos(x−y) − cos(x+y)]<br>
+              cos x cos y = ½[cos(x−y) + cos(x+y)]
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="sum to product trigonometry">
+
+            <span class="formula-tag">Trigonometry</span>
+
+            <h3>Sum-to-Product</h3>
+
+            <div class="formula-expression">
+              sin x + sin y =
+              2sin((x+y)/2)cos((x−y)/2)
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           SEQUENCES
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="algebra"
+      >
+
+        <div class="section-title">
+          <h2>Sequences & Series</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="AP arithmetic progression nth term">
+
+            <span class="formula-tag">Sequences</span>
+
+            <h3>AP — nth Term</h3>
+
+            <div class="formula-expression">
+              aₙ = a + (n−1)d
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="AP arithmetic progression sum">
+
+            <span class="formula-tag">Sequences</span>
+
+            <h3>AP — Sum of n Terms</h3>
+
+            <div class="formula-expression">
+              Sₙ = n/2 [2a + (n−1)d]
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="AP last term">
+
+            <span class="formula-tag">Sequences</span>
+
+            <h3>AP — Last Term</h3>
+
+            <div class="formula-expression">
+              l = a + (n−1)d
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="GP geometric progression nth term">
+
+            <span class="formula-tag">Sequences</span>
+
+            <h3>GP — nth Term</h3>
+
+            <div class="formula-expression">
+              aₙ = arⁿ⁻¹
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="GP geometric progression sum">
+
+            <span class="formula-tag">Sequences</span>
+
+            <h3>GP — Sum</h3>
+
+            <div class="formula-expression">
+              Sₙ = a(rⁿ−1)/(r−1)
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="geometric mean">
+
+            <span class="formula-tag">Sequences</span>
+
+            <h3>Geometric Mean</h3>
+
+            <div class="formula-expression">
+              GM = √ab
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           PERMUTATION / COMBINATION
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="algebra"
+      >
+
+        <div class="section-title">
+          <h2>Permutations & Combinations</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="factorial">
+
+            <span class="formula-tag">Combinatorics</span>
+
+            <h3>Factorial</h3>
+
+            <div class="formula-expression">
+              n! = 1 × 2 × 3 × ... × n
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="permutation nPr">
+
+            <span class="formula-tag">Combinatorics</span>
+
+            <h3>Permutation</h3>
+
+            <div class="formula-expression">
+              ⁿPᵣ = n!/(n−r)!
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="combination nCr">
+
+            <span class="formula-tag">Combinatorics</span>
+
+            <h3>Combination</h3>
+
+            <div class="formula-expression">
+              ⁿCᵣ = n!/[r!(n−r)!]
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="permutation repetition">
+
+            <span class="formula-tag">Combinatorics</span>
+
+            <h3>Permutation with Repetition</h3>
+
+            <div class="formula-expression">
+              nʳ
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           BINOMIAL
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="algebra"
+      >
+
+        <div class="section-title">
+          <h2>Binomial Theorem</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="binomial theorem expansion">
+
+            <span class="formula-tag">Binomial</span>
+
+            <h3>Binomial Expansion</h3>
+
+            <div class="formula-expression">
+              (a+b)ⁿ =
+              Σ ⁿCᵣ aⁿ⁻ʳbʳ
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="general term binomial">
+
+            <span class="formula-tag">Binomial</span>
+
+            <h3>General Term</h3>
+
+            <div class="formula-expression">
+              Tᵣ₊₁ = ⁿCᵣ aⁿ⁻ʳbʳ
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           COMPLEX NUMBERS
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="algebra"
+      >
+
+        <div class="section-title">
+          <h2>Complex Numbers</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="complex number standard form">
+
+            <span class="formula-tag">Complex</span>
+
+            <h3>Complex Number</h3>
+
+            <div class="formula-expression">
+              z = a + ib
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="complex conjugate">
+
+            <span class="formula-tag">Complex</span>
+
+            <h3>Conjugate</h3>
+
+            <div class="formula-expression">
+              z̄ = a − ib
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="modulus complex number">
+
+            <span class="formula-tag">Complex</span>
+
+            <h3>Modulus</h3>
+
+            <div class="formula-expression">
+              |z| = √(a²+b²)
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="polar form complex number">
+
+            <span class="formula-tag">Complex</span>
+
+            <h3>Polar Form</h3>
+
+            <div class="formula-expression">
+              z = r(cos θ + i sin θ)
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="powers i complex">
+
+            <span class="formula-tag">Complex</span>
+
+            <h3>Powers of i</h3>
+
+            <div class="formula-expression">
+              i⁴ᵏ = 1<br>
+              i⁴ᵏ⁺¹ = i<br>
+              i⁴ᵏ⁺² = −1<br>
+              i⁴ᵏ⁺³ = −i
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           CONIC SECTIONS
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="geometry"
+      >
+
+        <div class="section-title">
+          <h2>Conic Sections</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="circle equation conic">
+
+            <span class="formula-tag">Conics</span>
+
+            <h3>Circle</h3>
+
+            <div class="formula-expression">
+              (x−h)² + (y−k)² = r²
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="parabola equation">
+
+            <span class="formula-tag">Conics</span>
+
+            <h3>Parabola</h3>
+
+            <div class="formula-expression">
+              y² = 4ax
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="ellipse equation">
+
+            <span class="formula-tag">Conics</span>
+
+            <h3>Ellipse</h3>
+
+            <div class="formula-expression">
+              x²/a² + y²/b² = 1
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="hyperbola equation">
+
+            <span class="formula-tag">Conics</span>
+
+            <h3>Hyperbola</h3>
+
+            <div class="formula-expression">
+              x²/a² − y²/b² = 1
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           3D GEOMETRY
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="geometry"
+      >
+
+        <div class="section-title">
+          <h2>3D Geometry</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="3d distance formula">
+
+            <span class="formula-tag">3D Geometry</span>
+
+            <h3>Distance Between Two Points</h3>
+
+            <div class="formula-expression">
+              d = √[(x₂−x₁)²+(y₂−y₁)²+(z₂−z₁)²]
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="3d midpoint">
+
+            <span class="formula-tag">3D Geometry</span>
+
+            <h3>Midpoint</h3>
+
+            <div class="formula-expression">
+              M = (
+              (x₁+x₂)/2,
+              (y₁+y₂)/2,
+              (z₁+z₂)/2
+              )
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="centroid 3d geometry">
+
+            <span class="formula-tag">3D Geometry</span>
+
+            <h3>Centroid</h3>
+
+            <div class="formula-expression">
+              G = (
+              (x₁+x₂+x₃)/3,
+              (y₁+y₂+y₃)/3,
+              (z₁+z₂+z₃)/3
+              )
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           CALCULUS
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="calculus"
+      >
+
+        <div class="section-title">
+          <h2>Limits & Differential Calculus</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="limit sum">
+
+            <span class="formula-tag">Limits</span>
+
+            <h3>Limit of Sum</h3>
+
+            <div class="formula-expression">
+              lim[f(x)+g(x)] =
+              lim f(x) + lim g(x)
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="standard limit sin x x">
+
+            <span class="formula-tag">Limits</span>
+
+            <h3>Standard Limit</h3>
+
+            <div class="formula-expression">
+              lim(x→0) sin x/x = 1
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="derivative definition">
+
+            <span class="formula-tag">Calculus</span>
+
+            <h3>Derivative Definition</h3>
+
+            <div class="formula-expression">
+              f′(x) =
+              lim(h→0)[f(x+h)−f(x)]/h
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="power rule derivative">
+
+            <span class="formula-tag">Calculus</span>
+
+            <h3>Power Rule</h3>
+
+            <div class="formula-expression">
+              d/dx(xⁿ) = nxⁿ⁻¹
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="derivative sine">
+
+            <span class="formula-tag">Calculus</span>
+
+            <h3>Derivative of sin x</h3>
+
+            <div class="formula-expression">
+              d/dx(sin x) = cos x
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="derivative cosine">
+
+            <span class="formula-tag">Calculus</span>
+
+            <h3>Derivative of cos x</h3>
+
+            <div class="formula-expression">
+              d/dx(cos x) = −sin x
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="sum rule derivative">
+
+            <span class="formula-tag">Calculus</span>
+
+            <h3>Sum / Difference Rule</h3>
+
+            <div class="formula-expression">
+              (u ± v)′ = u′ ± v′
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="product rule derivative">
+
+            <span class="formula-tag">Calculus</span>
+
+            <h3>Product Rule</h3>
+
+            <div class="formula-expression">
+              (uv)′ = u′v + uv′
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="quotient rule derivative">
+
+            <span class="formula-tag">Calculus</span>
+
+            <h3>Quotient Rule</h3>
+
+            <div class="formula-expression">
+              (u/v)′ = (u′v − uv′)/v²
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           STATISTICS
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="statistics"
+      >
+
+        <div class="section-title">
+          <h2>Statistics</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="mean statistics direct method">
+
+            <span class="formula-tag">Statistics</span>
+
+            <h3>Mean — Direct Method</h3>
+
+            <div class="formula-expression">
+              x̄ = Σfx / Σf
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="assumed mean">
+
+            <span class="formula-tag">Statistics</span>
+
+            <h3>Assumed Mean Method</h3>
+
+            <div class="formula-expression">
+              x̄ = a + Σfd/Σf
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="step deviation mean">
+
+            <span class="formula-tag">Statistics</span>
+
+            <h3>Step-Deviation Method</h3>
+
+            <div class="formula-expression">
+              x̄ = a + (Σfu/Σf)h
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="class mark statistics">
+
+            <span class="formula-tag">Statistics</span>
+
+            <h3>Class Mark</h3>
+
+            <div class="formula-expression">
+              Class Mark =
+              (Upper Limit + Lower Limit)/2
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="variance statistics">
+
+            <span class="formula-tag">Statistics</span>
+
+            <h3>Variance</h3>
+
+            <div class="formula-expression">
+              σ² = (1/N)Σ(xᵢ−x̄)²
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="standard deviation statistics">
+
+            <span class="formula-tag">Statistics</span>
+
+            <h3>Standard Deviation</h3>
+
+            <div class="formula-expression">
+              σ = √[(1/N)Σ(xᵢ−x̄)²]
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="coefficient variation">
+
+            <span class="formula-tag">Statistics</span>
+
+            <h3>Coefficient of Variation</h3>
+
+            <div class="formula-expression">
+              C.V. = (σ/x̄) × 100
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           PROBABILITY
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="probability"
+      >
+
+        <div class="section-title">
+          <h2>Probability</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="probability basic formula">
+
+            <span class="formula-tag">Probability</span>
+
+            <h3>Basic Probability</h3>
+
+            <div class="formula-expression">
+              P(E) =
+              Favourable Outcomes /
+              Total Outcomes
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="probability range">
+
+            <span class="formula-tag">Probability</span>
+
+            <h3>Probability Range</h3>
+
+            <div class="formula-expression">
+              0 ≤ P(E) ≤ 1
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="sure event probability">
+
+            <span class="formula-tag">Probability</span>
+
+            <h3>Sure Event</h3>
+
+            <div class="formula-expression">
+              P(S) = 1
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="impossible event probability">
+
+            <span class="formula-tag">Probability</span>
+
+            <h3>Impossible Event</h3>
+
+            <div class="formula-expression">
+              P(∅) = 0
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="complement probability">
+
+            <span class="formula-tag">Probability</span>
+
+            <h3>Complementary Event</h3>
+
+            <div class="formula-expression">
+              P(Ē) = 1 − P(E)
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           ENGINEERING MATH QUICK REFERENCES
+      ====================================================== -->
+
+      <section
+        class="formula-section"
+        data-section="engineering"
+      >
+
+        <div class="section-title">
+          <h2>Engineering Mathematics Quick Reference</h2>
+        </div>
+
+        <div class="formula-grid">
+
+
+          <article class="formula-card"
+            data-search="circle area">
+
+            <span class="formula-tag">Geometry</span>
+
+            <h3>Circle Area</h3>
+
+            <div class="formula-expression">
+              A = πr²
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="circle circumference">
+
+            <span class="formula-tag">Geometry</span>
+
+            <h3>Circle Circumference</h3>
+
+            <div class="formula-expression">
+              C = 2πr
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="cylinder volume">
+
+            <span class="formula-tag">Mensuration</span>
+
+            <h3>Cylinder Volume</h3>
+
+            <div class="formula-expression">
+              V = πr²h
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="cone volume">
+
+            <span class="formula-tag">Mensuration</span>
+
+            <h3>Cone Volume</h3>
+
+            <div class="formula-expression">
+              V = ⅓πr²h
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="sphere volume">
+
+            <span class="formula-tag">Mensuration</span>
+
+            <h3>Sphere Volume</h3>
+
+            <div class="formula-expression">
+              V = 4/3 πr³
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="sphere surface area">
+
+            <span class="formula-tag">Mensuration</span>
+
+            <h3>Sphere Surface Area</h3>
+
+            <div class="formula-expression">
+              A = 4πr²
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="pythagoras theorem">
+
+            <span class="formula-tag">Geometry</span>
+
+            <h3>Pythagoras Theorem</h3>
+
+            <div class="formula-expression">
+              c² = a² + b²
+            </div>
+
+          </article>
+
+
+          <article class="formula-card"
+            data-search="height distance tangent">
+
+            <span class="formula-tag">Engineering</span>
+
+            <h3>Height-Distance Relation</h3>
+
+            <div class="formula-expression">
+              Height / Base = tan θ
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- EMPTY SEARCH -->
+      <div class="empty-state" id="emptyState">
+
+        <h3>No formulas found</h3>
+
+        <p>
+          Try searching for another topic such as
+          quadratic, slope, sine, derivative or probability.
+        </p>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="footer" style="background: var(--card); border-top: 1px solid var(--border); padding: 3rem 0; margin-top: 4rem;">
+    <div class="wrap" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: left;">
+      <div>
+        <a class="logo" href="/" style="display:inline-flex; align-items:center; gap:0.5rem; font-size:1.5rem; font-weight:800; color:var(--text); text-decoration:none; margin-bottom: 1rem;">
+          <span class="logo-mark" style="background:var(--color-primary); color:#fff; padding:0.2rem 0.6rem; border-radius:0.5rem;">Σ</span>EngiConvert
+        </a>
+        <p class="muted" style="line-height: 1.6; font-size: 0.95rem;">
+          A comprehensive suite of engineering calculators, AI solvers, and academic resources designed for students and professionals. Built by Jatin Singh Bisht.
+        </p>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Quick Links</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="/universal-solver" class="muted" style="text-decoration: none; transition: color 0.2s;">✨ AI Solver</a></li>
+          <li><a href="/academic-hub" class="muted" style="text-decoration: none; transition: color 0.2s;">📚 Academic Hub</a></li>
+          <li><a href="/physics" class="muted" style="text-decoration: none; transition: color 0.2s;">⚛️ Physics Tools</a></li>
+          <li><a href="/maths" class="muted" style="text-decoration: none; transition: color 0.2s;">📐 Math Tools</a></li>
+          <li><a href="/formulas" class="muted" style="text-decoration: none; transition: color 0.2s;">🧪 Formula Library</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Connect with me</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="https://www.linkedin.com/in/jatin-singh-bisht-019648380" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">💼 LinkedIn</a></li>
+          <li><a href="https://github.com/Web-wanderer01" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">🐱 GitHub Profile</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap" style="text-align: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--color-muted); font-size: 0.9rem;">
+      &copy; 2026 EngiConvert. All rights reserved.
+    </div>
+  </footer>
+
+
+  <!-- MOBILE NAV -->
+  <nav class="bottom">
+
+    <a href="/">
+      <b>⌂</b>
+      Home
+    </a>
+
+    <a href="/number-system">
+      <b>Σ</b>
+      Numbers
+    </a>
+
+    <a href="/unit-converter">
+      <b>⇄</b>
+      Units
+    </a>
+
+    <a href="/physics">
+      <b>ϟ</b>
+      Physics
+    </a>
+
+    <a href="/formulas">
+      <b>≡</b>
+      Library
+    </a>
+
+  </nav>
+
+
+  <!-- SEARCH + FILTER SCRIPT -->
+  <script>
+
+    const searchInput =
+      document.getElementById("formulaSearch");
+
+    const cards =
+      document.querySelectorAll(".formula-card");
+
+    const sections =
+      document.querySelectorAll(".formula-section");
+
+    const tabs =
+      document.querySelectorAll(".category-tab");
+
+    const emptyState =
+      document.getElementById("emptyState");
+
+
+    let activeCategory = "all";
+
+
+    function filterFormulas() {
+
+      const query =
+        searchInput.value
+          .toLowerCase()
+          .trim();
+
+      let visibleCards = 0;
+
+
+      cards.forEach(card => {
+
+        const text =
+          (
+            card.innerText +
+            " " +
+            card.dataset.search
+          ).toLowerCase();
+
+        const cardSection =
+          card.closest(".formula-section");
+
+        const category =
+          cardSection.dataset.section;
+
+
+        const matchesSearch =
+          !query || text.includes(query);
+
+        const matchesCategory =
+          activeCategory === "all" ||
+          category === activeCategory;
+
+
+        if (matchesSearch && matchesCategory) {
+
+          card.style.display = "";
+
+          visibleCards++;
+
+        } else {
+
+          card.style.display = "none";
+
+        }
+
+      });
+
+
+      sections.forEach(section => {
+
+        const visible =
+          [...section.querySelectorAll(".formula-card")]
+            .some(card => card.style.display !== "none");
+
+        section.style.display =
+          visible ? "" : "none";
+
+      });
+
+
+      emptyState.style.display =
+        visibleCards === 0 ? "block" : "none";
+
+    }
+
+
+    searchInput.addEventListener(
+      "input",
+      filterFormulas
+    );
+
+
+    tabs.forEach(tab => {
+
+      tab.addEventListener("click", () => {
+
+        tabs.forEach(t =>
+          t.classList.remove("active")
+        );
+
+        tab.classList.add("active");
+
+        activeCategory =
+          tab.dataset.category;
+
+        filterFormulas();
+
+      });
+
+    });
+
+  </script>
+
+</body>
+
+</html>
+

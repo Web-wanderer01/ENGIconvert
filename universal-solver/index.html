@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Universal AI Solver — EngiConvert</title>
+  <link rel="stylesheet" href="/theme.css">
+  <script src="/theme.js" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .ai-hero {
+      background: linear-gradient(145deg, var(--card) 0%, rgba(99,102,241,0.05) 100%);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 3rem 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .query-input {
+      width: 100%;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      color: var(--text);
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+      margin-bottom: 1rem;
+    }
+    .query-input:focus {
+      border-color: var(--color-primary);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+    .solve-btn {
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 0.8rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .solve-btn:hover {
+      background: #4f46e5;
+    }
+    .loading {
+      display: none;
+      margin: 2rem 0;
+      color: var(--color-muted);
+      font-style: italic;
+    }
+    .result-panel {
+      display: none;
+      margin-top: 2rem;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap nav">
+      <a class="logo" href="/"><span class="logo-mark">Σ</span>EngiConvert</a>
+                  <nav class="navlinks">
+        <a href="/universal-solver" style="color:var(--color-primary); font-weight:bold;">AI Solver ✨</a>
+        <a href="/academic-hub" style="color:#10b981; font-weight:bold;">Academic Hub 📚</a>
+        <a href="/number-system">Numbers</a>
+        <a href="/unit-converter">Units</a>
+        <a href="/computer-science">CS</a>
+        <a href="/physics">Physics</a>
+        <a href="/formulas">Formulas</a>
+      </nav>
+      <div class="spacer"></div>
+      <a class="btn" href="/">Back to Home</a>
+    </div>
+  </header>
+  
+  <main class="page">
+    <div class="wrap">
+      <div class="ai-hero">
+        <h1 style="font-size:2.5rem; margin-bottom:1rem;">Universal <span class="gradient">AI Solver</span></h1>
+        <p style="color:var(--color-muted); max-width:600px; margin:0 auto 2rem; line-height:1.6;">
+          Ask any engineering, physics, or mathematics question. Our AI will solve it and provide the step-by-step working, just like a real notebook.
+        </p>
+        
+        <form id="solverForm" style="max-width: 700px; margin: 0 auto;">
+          <input type="text" id="queryInput" class="query-input" placeholder="e.g. Calculate the force of a 10kg mass accelerating at 5m/s²" required autocomplete="off">
+          <button type="submit" class="solve-btn">Solve Problem ✨</button>
+        </form>
+        
+        <div id="loading" class="loading">
+          Thinking... Analyzing the engineering problem...
+        </div>
+      </div>
+
+      <div id="resultPanel" class="card panel result-panel" style="max-width: 800px; margin: 0 auto;">
+        <div class="muted mono" style="font-size:.75rem">SOLUTION</div>
+        <div id="finalAnswer" class="result-value" style="margin-top:1rem; font-size:2rem; color:var(--color-primary);"></div>
+        <div id="stepsContainer" class="steps">
+          <!-- Steps will be injected here -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('solverForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const query = document.getElementById('queryInput').value;
+      const loading = document.getElementById('loading');
+      const resultPanel = document.getElementById('resultPanel');
+      const finalAnswer = document.getElementById('finalAnswer');
+      const stepsContainer = document.getElementById('stepsContainer');
+      
+      loading.style.display = 'block';
+      resultPanel.style.display = 'none';
+      
+      try {
+        const response = await fetch('/api/ai-solve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+          alert("Error: " + data.error);
+          loading.style.display = 'none';
+          return;
+        }
+        
+        finalAnswer.textContent = data.answer;
+        
+        stepsContainer.innerHTML = '';
+        data.steps.forEach((step, index) => {
+          const stepEl = document.createElement('div');
+          stepEl.className = 'step';
+          
+          const numSpan = document.createElement('span');
+          numSpan.textContent = String(index + 1).padStart(2, '0');
+          
+          const textNode = document.createTextNode(step);
+          
+          stepEl.appendChild(numSpan);
+          stepEl.appendChild(textNode);
+          stepsContainer.appendChild(stepEl);
+        });
+        
+        loading.style.display = 'none';
+        resultPanel.style.display = 'block';
+        
+      } catch (err) {
+        alert("Failed to connect to the server.");
+        loading.style.display = 'none';
+      }
+    });
+  </script>
+  <footer class="footer" style="background: var(--card); border-top: 1px solid var(--border); padding: 3rem 0; margin-top: 4rem;">
+    <div class="wrap" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: left;">
+      <div>
+        <a class="logo" href="/" style="display:inline-flex; align-items:center; gap:0.5rem; font-size:1.5rem; font-weight:800; color:var(--text); text-decoration:none; margin-bottom: 1rem;">
+          <span class="logo-mark" style="background:var(--color-primary); color:#fff; padding:0.2rem 0.6rem; border-radius:0.5rem;">Σ</span>EngiConvert
+        </a>
+        <p class="muted" style="line-height: 1.6; font-size: 0.95rem;">
+          A comprehensive suite of engineering calculators, AI solvers, and academic resources designed for students and professionals. Built by Jatin Singh Bisht.
+        </p>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Quick Links</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="/universal-solver" class="muted" style="text-decoration: none; transition: color 0.2s;">✨ AI Solver</a></li>
+          <li><a href="/academic-hub" class="muted" style="text-decoration: none; transition: color 0.2s;">📚 Academic Hub</a></li>
+          <li><a href="/physics" class="muted" style="text-decoration: none; transition: color 0.2s;">⚛️ Physics Tools</a></li>
+          <li><a href="/maths" class="muted" style="text-decoration: none; transition: color 0.2s;">📐 Math Tools</a></li>
+          <li><a href="/formulas" class="muted" style="text-decoration: none; transition: color 0.2s;">🧪 Formula Library</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Connect with me</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="https://www.linkedin.com/in/jatin-singh-bisht-019648380" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">💼 LinkedIn</a></li>
+          <li><a href="https://github.com/Web-wanderer01" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">🐱 GitHub Profile</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap" style="text-align: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--color-muted); font-size: 0.9rem;">
+      &copy; 2026 EngiConvert. All rights reserved.
+    </div>
+  </footer>
+</body>
+</html>
+
+

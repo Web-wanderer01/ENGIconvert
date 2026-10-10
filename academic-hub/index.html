@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Academic Hub — EngiConvert</title>
+  <link rel="stylesheet" href="/theme.css">
+  <script src="/theme.js" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .hub-hero {
+      background: linear-gradient(145deg, var(--card) 0%, rgba(16, 185, 129, 0.05) 100%);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 3rem 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .select-input {
+      width: 100%;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      color: var(--text);
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .select-input:focus {
+      border-color: #10b981;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    }
+    .generate-btn {
+      background: #10b981;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 0.8rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .generate-btn:hover {
+      background: #059669;
+    }
+    .loading {
+      display: none;
+      margin: 2rem 0;
+      color: var(--color-muted);
+      font-style: italic;
+    }
+    .result-panel {
+      display: none;
+      margin-top: 2rem;
+      text-align: left;
+    }
+    .markdown-body {
+      line-height: 1.7;
+      color: var(--color-text);
+      font-size: 1.05rem;
+    }
+    .markdown-body h2 {
+      color: #10b981;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+    .markdown-body h3 {
+      color: #fff;
+      margin-top: 1.5rem;
+      margin-bottom: 0.8rem;
+    }
+    .markdown-body p {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap nav">
+      <a class="logo" href="/"><span class="logo-mark">Σ</span>EngiConvert</a>
+                  <nav class="navlinks">
+        <a href="/universal-solver" style="color:var(--color-primary); font-weight:bold;">AI Solver ✨</a>
+        <a href="/academic-hub" style="color:#10b981; font-weight:bold;">Academic Hub 📚</a>
+        <a href="/number-system">Numbers</a>
+        <a href="/unit-converter">Units</a>
+        <a href="/computer-science">CS</a>
+        <a href="/physics">Physics</a>
+        <a href="/formulas">Formulas</a>
+      </nav>
+      <div class="spacer"></div>
+      <a class="btn" href="/">Back to Home</a>
+    </div>
+  </header>
+  
+  <main class="page">
+    <div class="wrap">
+      <div class="hub-hero">
+        <h1 style="font-size:2.5rem; margin-bottom:1rem;">Academic <span style="background: -webkit-linear-gradient(45deg, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Hub</span></h1>
+        <p style="color:var(--color-muted); max-width:600px; margin:0 auto 2rem; line-height:1.6;">
+          Instantly generate full syllabuses, sample question papers, formulas, and solutions for Class 10-12 and B.Tech (All Semesters).
+        </p>
+        
+        <form id="academicForm" style="max-width: 500px; margin: 0 auto; text-align: left;">
+          
+          <label style="color:var(--color-muted); font-size:0.9rem; margin-bottom:0.5rem; display:block;">Select Grade / Semester</label>
+          <select id="level" class="select-input" required>
+            <option value="">-- Choose Level --</option>
+            <option value="Class 10 CBSE/ICSE">Class 10 (CBSE/ICSE)</option>
+            <option value="Class 11 Science">Class 11 (Science)</option>
+            <option value="Class 12 Science">Class 12 (Science)</option>
+            <option value="B.Tech Semester 1">B.Tech - Semester 1</option>
+            <option value="B.Tech Semester 2">B.Tech - Semester 2</option>
+            <option value="B.Tech Semester 3">B.Tech - Semester 3</option>
+            <option value="B.Tech Semester 4">B.Tech - Semester 4</option>
+            <option value="B.Tech Semester 5">B.Tech - Semester 5</option>
+            <option value="B.Tech Semester 6">B.Tech - Semester 6</option>
+            <option value="B.Tech Semester 7">B.Tech - Semester 7</option>
+            <option value="B.Tech Semester 8">B.Tech - Semester 8</option>
+          </select>
+
+          <label style="color:var(--color-muted); font-size:0.9rem; margin-bottom:0.5rem; display:block;">Select Subject / Branch</label>
+          <input type="text" id="subject" class="select-input" placeholder="e.g. Physics, Data Structures, Mathematics..." required autocomplete="off">
+
+          <label style="color:var(--color-muted); font-size:0.9rem; margin-bottom:0.5rem; display:block;">What do you need?</label>
+          <select id="resourceType" class="select-input" required>
+            <option value="Syllabus & Important Topics">Syllabus & Important Topics</option>
+            <option value="Full List of Formulas">Full List of Formulas / Cheat Sheet</option>
+            <option value="Mock Question Paper with Solutions">Mock Question Paper with Solutions</option>
+            <option value="Previous Year Style Important Questions">Important Questions with Answers</option>
+          </select>
+
+          <button type="submit" class="generate-btn">Generate Content 🚀</button>
+        </form>
+        
+        <div id="loading" class="loading">
+          Our AI is compiling the academic resources for you. Please wait...
+        </div>
+      </div>
+
+      <div id="resultPanel" class="card panel result-panel" style="max-width: 900px; margin: 0 auto;">
+        <div class="muted mono" style="font-size:.75rem; color:#10b981;">GENERATED RESOURCE</div>
+        <div id="documentContent" class="markdown-body" style="margin-top:1.5rem;">
+          <!-- Markdown-like content injected here -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('academicForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const level = document.getElementById('level').value;
+      const subject = document.getElementById('subject').value;
+      const resourceType = document.getElementById('resourceType').value;
+      
+      const loading = document.getElementById('loading');
+      const resultPanel = document.getElementById('resultPanel');
+      const documentContent = document.getElementById('documentContent');
+      
+      loading.style.display = 'block';
+      resultPanel.style.display = 'none';
+      
+      try {
+        const response = await fetch('/api/ai-academic', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ level, subject, resourceType })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+          alert("Error: " + data.error);
+          loading.style.display = 'none';
+          return;
+        }
+        
+        // Simple string to HTML converter (for bold and newlines)
+        let htmlContent = data.content
+          .replace(/## (.*?)\n/g, '<h2>$1</h2>')
+          .replace(/### (.*?)\n/g, '<h3>$1</h3>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\n/g, '<br>');
+          
+        documentContent.innerHTML = htmlContent;
+        
+        loading.style.display = 'none';
+        resultPanel.style.display = 'block';
+        
+      } catch (err) {
+        alert("Failed to connect to the server.");
+        loading.style.display = 'none';
+      }
+    });
+  </script>
+  <footer class="footer" style="background: var(--card); border-top: 1px solid var(--border); padding: 3rem 0; margin-top: 4rem;">
+    <div class="wrap" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: left;">
+      <div>
+        <a class="logo" href="/" style="display:inline-flex; align-items:center; gap:0.5rem; font-size:1.5rem; font-weight:800; color:var(--text); text-decoration:none; margin-bottom: 1rem;">
+          <span class="logo-mark" style="background:var(--color-primary); color:#fff; padding:0.2rem 0.6rem; border-radius:0.5rem;">Σ</span>EngiConvert
+        </a>
+        <p class="muted" style="line-height: 1.6; font-size: 0.95rem;">
+          A comprehensive suite of engineering calculators, AI solvers, and academic resources designed for students and professionals. Built by Jatin Singh Bisht.
+        </p>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Quick Links</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="/universal-solver" class="muted" style="text-decoration: none; transition: color 0.2s;">✨ AI Solver</a></li>
+          <li><a href="/academic-hub" class="muted" style="text-decoration: none; transition: color 0.2s;">📚 Academic Hub</a></li>
+          <li><a href="/physics" class="muted" style="text-decoration: none; transition: color 0.2s;">⚛️ Physics Tools</a></li>
+          <li><a href="/maths" class="muted" style="text-decoration: none; transition: color 0.2s;">📐 Math Tools</a></li>
+          <li><a href="/formulas" class="muted" style="text-decoration: none; transition: color 0.2s;">🧪 Formula Library</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.1rem;">Connect with me</h3>
+        <ul style="list-style: none; padding: 0; display: grid; gap: 0.5rem;">
+          <li><a href="https://www.linkedin.com/in/jatin-singh-bisht-019648380" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">💼 LinkedIn</a></li>
+          <li><a href="https://github.com/Web-wanderer01" target="_blank" class="muted" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">🐱 GitHub Profile</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap" style="text-align: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--color-muted); font-size: 0.9rem;">
+      &copy; 2026 EngiConvert. All rights reserved.
+    </div>
+  </footer>
+</body>
+</html>
+
+
