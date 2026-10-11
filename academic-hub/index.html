@@ -172,16 +172,23 @@
           body: JSON.stringify({ level, subject, resourceType })
         });
         
-        const data = await response.json();
+        let data;
+        try {
+          data = await response.json();
+        } catch (jsonErr) {
+          const rawText = await response.text();
+          throw new Error(rawText || "Invalid server response");
+        }
         
-        if (data.error) {
-          alert("Error: " + data.error);
+        if (!response.ok || data.error) {
+          alert("Error: " + (data.error || "Server error: " + response.status));
           loading.style.display = 'none';
           return;
         }
         
         // Simple string to HTML converter (for bold and newlines)
-        let htmlContent = data.content
+        const contentStr = data.content || "No content generated.";
+        let htmlContent = contentStr
           .replace(/## (.*?)\n/g, '<h2>$1</h2>')
           .replace(/### (.*?)\n/g, '<h3>$1</h3>')
           .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -193,7 +200,7 @@
         resultPanel.style.display = 'block';
         
       } catch (err) {
-        alert("Failed to connect to the server.");
+        alert("Failed to connect to the server: " + err.message);
         loading.style.display = 'none';
       }
     });

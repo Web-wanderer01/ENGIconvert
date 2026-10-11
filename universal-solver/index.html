@@ -125,18 +125,25 @@
           body: JSON.stringify({ query })
         });
         
-        const data = await response.json();
+        let data;
+        try {
+          data = await response.json();
+        } catch (jsonErr) {
+          const rawText = await response.text();
+          throw new Error(rawText || "Invalid server response");
+        }
         
-        if (data.error) {
-          alert("Error: " + data.error);
+        if (!response.ok || data.error) {
+          alert("Error: " + (data.error || "Server error: " + response.status));
           loading.style.display = 'none';
           return;
         }
         
-        finalAnswer.textContent = data.answer;
+        finalAnswer.textContent = data.answer || "Solution complete";
         
         stepsContainer.innerHTML = '';
-        data.steps.forEach((step, index) => {
+        const steps = Array.isArray(data.steps) ? data.steps : [data.answer || "Complete"];
+        steps.forEach((step, index) => {
           const stepEl = document.createElement('div');
           stepEl.className = 'step';
           
@@ -154,7 +161,7 @@
         resultPanel.style.display = 'block';
         
       } catch (err) {
-        alert("Failed to connect to the server.");
+        alert("Failed to connect to the server: " + err.message);
         loading.style.display = 'none';
       }
     });
